@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Dashboard — FPA French Restaurant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background: #1a1a2e; color: #e0e0e0; min-height: 100vh; }
+
+    /* Login */
+    .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { background: #16213e; padding: 2.5rem; border-radius: 12px; text-align: center; max-width: 400px; width: 90%; }
+    .login-box h1 { font-family: 'Playfair Display', serif; color: #c9a87c; margin-bottom: .5rem; font-size: 1.8rem; }
+    .login-box p { color: #8b9dc3; margin-bottom: 1.5rem; }
+    .login-box input { width: 100%; padding: .75rem; border: 2px solid #2a3a5c; background: #0f3460; color: #fff; border-radius: 8px; font-size: 1rem; margin-bottom: 1rem; }
+    .login-box input:focus { outline: none; border-color: #c9a87c; }
+    .login-box button { width: 100%; padding: .75rem; background: #6b2d2d; color: #fff; border: none; border-radius: 8px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+    .login-box button:hover { background: #8b3e3e; }
+    .login-error { color: #ef5350; font-size: .85rem; margin-top: .5rem; }
+
+    /* Dashboard */
+    .dashboard { display: none; }
+    .dashboard.active { display: block; }
+    .top-bar { background: #16213e; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
+    .top-bar h1 { font-family: 'Playfair Display', serif; color: #c9a87c; font-size: 1.3rem; }
+    .top-bar .year-tabs { display: flex; gap: .5rem; }
+    .year-tab { padding: .4rem 1rem; border: 2px solid #2a3a5c; background: transparent; color: #8b9dc3; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: .85rem; }
+    .year-tab.active, .year-tab:hover { background: #6b2d2d; color: #fff; border-color: #6b2d2d; }
+
+    .main { padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
+
+    /* Panels */
+    .panel { background: #16213e; border-radius: 10px; padding: 1.25rem; }
+    .panel h2 { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; color: #c9a87c; margin-bottom: 1rem; }
+
+    /* Stage Controls */
+    .stage-row { display: flex; align-items: center; justify-content: space-between; padding: .65rem .75rem; background: #0f3460; border-radius: 8px; margin-bottom: .5rem; }
+    .stage-name { font-weight: 500; font-size: .9rem; }
+    .toggle-wrap { position: relative; width: 48px; height: 26px; }
+    .toggle-input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #2a3a5c; border-radius: 13px; cursor: pointer; transition: .3s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: #8b9dc3; border-radius: 50%; transition: .3s; }
+    .toggle-input:checked + .toggle-slider { background: #4a8c5c; }
+    .toggle-input:checked + .toggle-slider::before { transform: translateX(22px); background: #fff; }
+    .unlock-all-btn { width: 100%; padding: .6rem; background: #4a8c5c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: .75rem; }
+    .unlock-all-btn:hover { background: #3a7a4c; }
+    .lock-all-btn { width: 100%; padding: .6rem; background: #6b2d2d; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: .5rem; }
+    .lock-all-btn:hover { background: #8b3e3e; }
+
+    /* Student List */
+    .student-row { display: flex; align-items: center; gap: .75rem; padding: .6rem .75rem; background: #0f3460; border-radius: 8px; margin-bottom: .4rem; font-size: .85rem; }
+    .student-row .s-avatar { font-size: 1.3rem; }
+    .student-row .s-name { flex: 1; font-weight: 500; }
+    .student-row .s-stage { color: #c9a87c; font-size: .8rem; }
+    .student-row .s-online { width: 8px; height: 8px; border-radius: 50%; }
+    .s-online.on { background: #4a8c5c; }
+    .s-online.off { background: #555; }
+    .student-row .s-score { color: #8b9dc3; font-size: .8rem; min-width: 60px; text-align: right; }
+
+    /* Broadcast */
+    .broadcast-input { display: flex; gap: .5rem; margin-top: .5rem; }
+    .broadcast-input input { flex: 1; padding: .5rem .75rem; background: #0f3460; border: 1px solid #2a3a5c; color: #fff; border-radius: 6px; font-size: .9rem; }
+    .broadcast-input button { padding: .5rem 1rem; background: #c9a87c; color: #1a1a2e; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+
+    /* Scores Table */
+    .scores-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
+    .scores-table th { text-align: left; padding: .5rem; color: #c9a87c; border-bottom: 1px solid #2a3a5c; }
+    .scores-table td { padding: .5rem; border-bottom: 1px solid #0f3460; }
+    .scores-table .highlight { color: #4a8c5c; font-weight: 600; }
+
+    /* Actions */
+    .actions-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
+    .action-btn { padding: .5rem 1.25rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: .85rem; }
+    .action-btn.danger { background: #b33a3a; color: #fff; }
+    .action-btn.danger:hover { background: #d32f2f; }
+    .action-btn.info { background: #2a3a5c; color: #8b9dc3; }
+    .action-btn.info:hover { background: #3a4a6c; }
+
+    /* Print summary */
+    .print-area { display: none; }
+    @media print {
+      body { background: #fff; color: #000; }
+      .dashboard, .top-bar, .panel { background: #fff; color: #000; }
+      .print-area { display: block; }
+      .no-print { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen" class="login-screen">
+  <div class="login-box">
+    <h1>Teacher Dashboard</h1>
+    <p>FPA French Restaurant Activity</p>
+    <input type="password" id="pwd-input" placeholder="Enter teacher password" autofocus>
+    <button id="pwd-btn">Sign In</button>
+    <p id="pwd-error" class="login-error"></p>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="dashboard">
+  <div class="top-bar no-print">
+    <h1>FPA French Restaurant — Teacher Control</h1>
+    <div class="year-tabs">
+      <button class="year-tab active" data-y="7">Year 7</button>
+      <button class="year-tab" data-y="8">Year 8</button>
+      <button class="year-tab" data-y="9">Year 9</button>
+      <button class="year-tab" data-y="10">Year 10</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <!-- Stage Controls -->
+    <div class="panel no-print">
+      <h2>Stage Controls — <span id="panel-year">Year 7</span></h2>
+      <div id="stage-controls"></div>
+      <button class="unlock-all-btn" id="btn-unlock-all">Unlock All Stages</button>
+      <button class="lock-all-btn" id="btn-lock-all">Lock All Stages</button>
+
+      <h2 style="margin-top:1.5rem">Broadcast Message</h2>
+      <div class="broadcast-input">
+        <input type="text" id="broadcast-text" placeholder="Type a message to all students...">
+        <button id="btn-broadcast">Send</button>
+      </div>
+
+      <div class="actions-row">
+        <button class="action-btn danger" id="btn-reset">Reset Class Data</button>
+        <button class="action-btn info" id="btn-print">Print Summary</button>
+      </div>
+    </div>
+
+    <!-- Students Live -->
+    <div class="panel">
+      <h2>Students <span id="student-count">(0)</span></h2>
+      <div id="student-list"></div>
+    </div>
+
+    <!-- Scores -->
+    <div class="panel" style="grid-column: 1 / -1;">
+      <h2>Scores Overview</h2>
+      <table class="scores-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>True/False</th>
+            <th>Multiple Choice</th>
+            <th>Drag & Drop</th>
+            <th>Total</th>
+            <th>Total Time</th>
+          </tr>
+        </thead>
+        <tbody id="scores-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script>
+(function() {
+  'use strict';
+
+  const TEACHER_PWD = 'FPA@2006';
+  const AVATARS = ['\u{1F468}\u200D\u{1F373}','\u{1F9D1}\u200D\u{1F373}','\u{1F469}\u200D\u{1F373}','\u{1F37D}\uFE0F','\u{1F950}','\u{1F354}','\u{1F370}','\u{1F355}','\u{1F96A}','\u{1F9C1}','\u{1F382}','\u{1F363}','\u{1F95E}','\u{1F32E}','\u{1F366}'];
+  const STAGE_NAMES = { vocab: 'Vocabulary', menu: 'Menu', roleplay: 'Roleplay', tf: 'True/False', mc: 'Multiple Choice', dd: 'Drag & Drop', scenario: 'Scenario', review: 'Review' };
+
+  let db, currentYear = 7;
+
+  // Login
+  document.getElementById('pwd-btn').addEventListener('click', tryLogin);
+  document.getElementById('pwd-input').addEventListener('keydown', e => { if (e.key === 'Enter') tryLogin(); });
+
+  function tryLogin() {
+    const pwd = document.getElementById('pwd-input').value;
+    if (pwd === TEACHER_PWD) {
+      document.getElementById('login-screen').style.display = 'none';
+      document.getElementById('dashboard').classList.add('active');
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      setupDashboard();
+    } else {
+      document.getElementById('pwd-error').textContent = 'Incorrect password.';
+    }
+  }
+
+  function setupDashboard() {
+    // Year tabs
+    document.querySelectorAll('.year-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        currentYear = parseInt(tab.dataset.y);
+        document.getElementById('panel-year').textContent = 'Year ' + currentYear;
+        watchYear();
+      });
+    });
+
+    // Unlock/Lock all
+    document.getElementById('btn-unlock-all').addEventListener('click', () => {
+      const updates = {};
+      Object.keys(STAGE_NAMES).forEach(s => { updates[s] = { unlocked: true }; });
+      db.ref('classes/y' + currentYear + '/settings/stages').set(updates);
+    });
+    document.getElementById('btn-lock-all').addEventListener('click', () => {
+      const updates = {};
+      Object.keys(STAGE_NAMES).forEach(s => { updates[s] = { unlocked: false }; });
+      db.ref('classes/y' + currentYear + '/settings/stages').set(updates);
+    });
+
+    // Broadcast
+    document.getElementById('btn-broadcast').addEventListener('click', () => {
+      const text = document.getElementById('broadcast-text').value.trim();
+      if (!text) return;
+      // Send to all year groups
+      [7,8,9,10].forEach(y => {
+        db.ref('classes/y' + y + '/settings/broadcast').set({ text, time: firebase.database.ServerValue.TIMESTAMP });
+      });
+      document.getElementById('broadcast-text').value = '';
+    });
+
+    // Reset
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      if (confirm('Are you sure you want to reset ALL data for Year ' + currentYear + '? This will remove all students and scores.')) {
+        const pwd = prompt('Enter teacher password to confirm:');
+        if (pwd === TEACHER_PWD) {
+          db.ref('classes/y' + currentYear).remove();
+          alert('Year ' + currentYear + ' data has been reset.');
+        }
+      }
+    });
+
+    // Print
+    document.getElementById('btn-print').addEventListener('click', () => window.print());
+
+    watchYear();
+  }
+
+  function watchYear() {
+    const ref = db.ref('classes/y' + currentYear);
+
+    // Stage controls
+    ref.child('settings/stages').on('value', snap => {
+      const stages = snap.val() || {};
+      const container = document.getElementById('stage-controls');
+      container.innerHTML = '';
+
+      Object.entries(STAGE_NAMES).forEach(([key, name]) => {
+        const unlocked = stages[key] && stages[key].unlocked;
+        const row = document.createElement('div');
+        row.className = 'stage-row';
+        row.innerHTML =
+          '<span class="stage-name">' + name + '</span>' +
+          '<label class="toggle-wrap">' +
+          '<input type="checkbox" class="toggle-input" data-stage="' + key + '" ' + (unlocked ? 'checked' : '') + '>' +
+          '<span class="toggle-slider"></span></label>';
+        row.querySelector('.toggle-input').addEventListener('change', function() {
+          db.ref('classes/y' + currentYear + '/settings/stages/' + this.dataset.stage + '/unlocked').set(this.checked);
+        });
+        container.appendChild(row);
+      });
+    });
+
+    // Students
+    ref.child('students').on('value', snap => {
+      const students = snap.val() || {};
+      const list = document.getElementById('student-list');
+      const body = document.getElementById('scores-body');
+      list.innerHTML = '';
+      body.innerHTML = '';
+
+      const entries = Object.entries(students);
+      document.getElementById('student-count').textContent = '(' + entries.length + ')';
+
+      entries.sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
+
+      entries.forEach(([id, s]) => {
+        // Student row
+        const row = document.createElement('div');
+        row.className = 'student-row';
+        const totalScore = calcTotal(s.scores);
+        row.innerHTML =
+          '<span class="s-online ' + (s.online ? 'on' : 'off') + '"></span>' +
+          '<span class="s-avatar">' + (AVATARS[s.avatar] || '') + '</span>' +
+          '<span class="s-name">' + esc(s.name) + '</span>' +
+          '<span class="s-stage">' + (STAGE_NAMES[s.currentStage] || s.currentStage || '-') + '</span>' +
+          '<span class="s-score">' + (totalScore.total > 0 ? totalScore.score + '/' + totalScore.total : '-') + '</span>';
+        list.appendChild(row);
+
+        // Scores row
+        const tr = document.createElement('tr');
+        const scores = s.scores || {};
+        tr.innerHTML =
+          '<td>' + esc(s.name) + '</td>' +
+          scoreCell(scores.tf) +
+          scoreCell(scores.mc) +
+          scoreCell(scores.dd) +
+          '<td class="highlight">' + (totalScore.total > 0 ? totalScore.score + '/' + totalScore.total + ' (' + totalScore.pct + '%)' : '-') + '</td>' +
+          '<td>' + (totalScore.time > 0 ? fmtTime(totalScore.time) : '-') + '</td>';
+        body.appendChild(tr);
+      });
+    });
+  }
+
+  function scoreCell(s) {
+    if (!s) return '<td>-</td>';
+    return '<td>' + s.score + '/' + s.total + ' (' + fmtTime(s.time) + ')</td>';
+  }
+
+  function calcTotal(scores) {
+    if (!scores) return { score: 0, total: 0, pct: 0, time: 0 };
+    let score = 0, total = 0, time = 0;
+    ['tf','mc','dd'].forEach(k => {
+      if (scores[k]) { score += scores[k].score; total += scores[k].total; time += scores[k].time || 0; }
+    });
+    return { score, total, pct: total > 0 ? Math.round(score / total * 100) : 0, time };
+  }
+
+  function fmtTime(s) { return Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60); }
+  function esc(str) { const d = document.createElement('div'); d.textContent = str || ''; return d.innerHTML; }
+})();
+</script>
+</body>
+</html>

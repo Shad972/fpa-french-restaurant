@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FPA French Restaurant Activity</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════
+     BROADCAST BAR (teacher messages)
+     ═══════════════════════════════════════════════ -->
+<div id="broadcast-bar" class="broadcast-bar hidden">
+  <span id="broadcast-msg"></span>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: WELCOME / PROFILE CREATION
+     ═══════════════════════════════════════════════ -->
+<section id="screen-welcome" class="screen active">
+  <div class="welcome-container">
+    <div class="restaurant-sign">
+      <span class="sign-deco">~ ~ ~</span>
+      <h1 id="welcome-title">Bienvenue</h1>
+      <p id="welcome-subtitle" class="subtitle">French Restaurant Activity</p>
+      <span class="sign-deco">~ ~ ~</span>
+    </div>
+    <div class="profile-card">
+      <h2>Create Your Profile</h2>
+      <p class="hint">Enter your first name to get started.</p>
+      <input type="text" id="input-name" placeholder="Your first name" maxlength="20" autocomplete="off">
+      <h3>Choose Your Avatar</h3>
+      <div id="avatar-grid" class="avatar-grid"></div>
+      <button id="btn-join" class="btn-primary" disabled>Join the Class</button>
+      <p id="join-error" class="error-text"></p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: LOBBY (waiting for teacher to start)
+     ═══════════════════════════════════════════════ -->
+<section id="screen-lobby" class="screen">
+  <div class="lobby-container">
+    <div class="lobby-header">
+      <div id="lobby-avatar" class="avatar-large"></div>
+      <h2>Welcome, <span id="lobby-name"></span>!</h2>
+      <p class="subtitle" id="lobby-restaurant-name"></p>
+    </div>
+    <div class="lobby-status">
+      <div class="pulse-dot"></div>
+      <p>Waiting for your teacher to start the activity...</p>
+    </div>
+    <div class="classmates-panel">
+      <h3>Classmates Online</h3>
+      <div id="classmates-list" class="classmates-list"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: STAGE LOCKED
+     ═══════════════════════════════════════════════ -->
+<section id="screen-locked" class="screen">
+  <div class="locked-container">
+    <div class="lock-visual">
+      <div class="lock-icon-wrap">
+        <svg class="lock-svg" viewBox="0 0 24 24" width="64" height="64"><rect x="3" y="11" width="18" height="11" rx="2" fill="#6b2d2d"/><path d="M7 11V7a5 5 0 0 1 10 0v4" fill="none" stroke="#6b2d2d" stroke-width="2"/></svg>
+      </div>
+    </div>
+    <h2>Stage Locked</h2>
+    <p>Your teacher will unlock the next activity soon.</p>
+    <p class="hint">Stay on this page and it will update automatically.</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: VOCABULARY WARM-UP
+     ═══════════════════════════════════════════════ -->
+<section id="screen-vocab" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 1</span>
+      <h2>Vocabulary Warm-Up</h2>
+      <p>Learn the key words before we begin. Tap a card to reveal its meaning!</p>
+    </div>
+    <div class="vocab-categories">
+      <button class="cat-btn active" data-cat="all">All</button>
+      <button class="cat-btn" data-cat="food">Food</button>
+      <button class="cat-btn" data-cat="drink">Drinks</button>
+      <button class="cat-btn" data-cat="phrase">Phrases</button>
+    </div>
+    <div id="vocab-grid" class="vocab-grid"></div>
+    <div class="vocab-progress">
+      <p>Cards revealed: <span id="vocab-count">0</span> / <span id="vocab-total">0</span></p>
+      <div class="progress-bar"><div id="vocab-bar" class="progress-fill"></div></div>
+    </div>
+    <button id="btn-vocab-done" class="btn-primary" disabled>Continue to Menu</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: MENU EXPLORATION
+     ═══════════════════════════════════════════════ -->
+<section id="screen-menu" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 2</span>
+      <h2>The Menu</h2>
+      <p>Explore the restaurant menu. Tap any item to see the English translation.</p>
+    </div>
+    <div id="menu-card" class="menu-card">
+      <div class="menu-header">
+        <h3 id="menu-name"></h3>
+        <p class="menu-tagline">Carte du jour</p>
+      </div>
+      <div id="menu-sections"></div>
+    </div>
+    <button id="btn-menu-done" class="btn-primary">Continue to Roleplay</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: ROLEPLAY
+     ═══════════════════════════════════════════════ -->
+<section id="screen-roleplay" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 3</span>
+      <h2>Roleplay Practice</h2>
+      <p>Read and practise these restaurant conversations. Tap a line to reveal the pronunciation guide.</p>
+    </div>
+    <div id="roleplay-tabs" class="roleplay-tabs"></div>
+    <div id="roleplay-content" class="roleplay-content"></div>
+    <div class="confidence-meter">
+      <h4>How confident do you feel?</h4>
+      <div class="confidence-options">
+        <button class="conf-btn" data-val="1">Not yet</button>
+        <button class="conf-btn" data-val="2">Getting there</button>
+        <button class="conf-btn" data-val="3">Confident</button>
+        <button class="conf-btn" data-val="4">Very confident</button>
+      </div>
+    </div>
+    <button id="btn-roleplay-done" class="btn-primary" disabled>Continue to Quizzes</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: TRUE/FALSE
+     ═══════════════════════════════════════════════ -->
+<section id="screen-tf" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 4</span>
+      <h2>True or False?</h2>
+      <p>Test your knowledge! Read each statement and decide.</p>
+    </div>
+    <div class="quiz-timer">
+      <span>Time: </span><span id="tf-timer">0:00</span>
+    </div>
+    <div class="quiz-progress">
+      <span>Question <span id="tf-current">1</span> of <span id="tf-total">10</span></span>
+    </div>
+    <div id="tf-question-area" class="question-area">
+      <p id="tf-statement" class="quiz-statement"></p>
+      <div class="tf-buttons">
+        <button class="btn-tf btn-true" onclick="APP.answerTF(true)">True</button>
+        <button class="btn-tf btn-false" onclick="APP.answerTF(false)">False</button>
+      </div>
+      <div id="tf-feedback" class="quiz-feedback hidden"></div>
+      <button id="tf-next" class="btn-secondary hidden" onclick="APP.nextTF()">Next Question</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: MULTIPLE CHOICE
+     ═══════════════════════════════════════════════ -->
+<section id="screen-mc" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 5</span>
+      <h2>Multiple Choice</h2>
+      <p>Choose the correct answer for each question.</p>
+    </div>
+    <div class="quiz-timer">
+      <span>Time: </span><span id="mc-timer">0:00</span>
+    </div>
+    <div class="quiz-progress">
+      <span>Question <span id="mc-current">1</span> of <span id="mc-total">10</span></span>
+    </div>
+    <div id="mc-question-area" class="question-area">
+      <p id="mc-question" class="quiz-statement"></p>
+      <div id="mc-options" class="mc-options"></div>
+      <div id="mc-feedback" class="quiz-feedback hidden"></div>
+      <button id="mc-next" class="btn-secondary hidden" onclick="APP.nextMC()">Next Question</button>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: DRAG & DROP
+     ═══════════════════════════════════════════════ -->
+<section id="screen-dd" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 6</span>
+      <h2>Match the Pairs</h2>
+      <p>Drag each French phrase to its correct English translation.</p>
+    </div>
+    <div class="quiz-timer">
+      <span>Time: </span><span id="dd-timer">0:00</span>
+    </div>
+    <div class="dd-score">
+      <span>Matched: <span id="dd-matched">0</span> / <span id="dd-total">10</span></span>
+    </div>
+    <div class="dd-container">
+      <div class="dd-column">
+        <h4>French</h4>
+        <div id="dd-french" class="dd-items"></div>
+      </div>
+      <div class="dd-column">
+        <h4>English</h4>
+        <div id="dd-english" class="dd-targets"></div>
+      </div>
+    </div>
+    <button id="btn-dd-submit" class="btn-primary" disabled>Submit Answers</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: SCENARIO BUILDER
+     ═══════════════════════════════════════════════ -->
+<section id="screen-scenario" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 7</span>
+      <h2>Create Your Own Scenario</h2>
+      <p id="scenario-instruction"></p>
+    </div>
+    <div id="scenario-steps" class="scenario-steps"></div>
+    <div id="scenario-preview" class="scenario-preview">
+      <h4>Your Conversation:</h4>
+      <div id="scenario-lines" class="scenario-lines"></div>
+    </div>
+    <button id="btn-scenario-done" class="btn-primary" disabled>Submit My Scenario</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: REVIEW & CORRECTIONS
+     ═══════════════════════════════════════════════ -->
+<section id="screen-review" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Results</span>
+      <h2>Your Results</h2>
+      <p>See how you did across all activities.</p>
+    </div>
+    <div id="review-summary" class="review-summary"></div>
+    <div id="review-details" class="review-details"></div>
+    <button id="btn-hall" class="btn-primary">View Hall of Fame</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: HALL OF FAME
+     ═══════════════════════════════════════════════ -->
+<section id="screen-hall" class="screen">
+  <div class="stage-container hall-container">
+    <h2 class="hall-title">Hall of Fame</h2>
+    <p class="hall-subtitle">Top Performers</p>
+    <div id="hall-podium" class="hall-podium"></div>
+    <div id="hall-table" class="hall-table"></div>
+  </div>
+</section>
+
+<!-- Scripts -->
+<script src="firebase-config.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
