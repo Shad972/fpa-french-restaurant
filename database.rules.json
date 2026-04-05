@@ -1,0 +1,20 @@
+{
+  "rules": {
+    "classes": {
+      "$classId": {
+        "students": {
+          ".read": true,
+          ".write": true
+        },
+        "attendance": {
+          ".read": true,
+          ".write": true
+        },
+        "settings": {
+          ".read": true,
+          ".write": true
+        }
+      }
+    }
+  }
+}

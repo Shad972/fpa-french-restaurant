@@ -24,63 +24,76 @@
     /* Dashboard */
     .dashboard { display: none; }
     .dashboard.active { display: block; }
-    .top-bar { background: #16213e; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1rem; }
-    .top-bar h1 { font-family: 'Playfair Display', serif; color: #c9a87c; font-size: 1.3rem; }
-    .top-bar .year-tabs { display: flex; gap: .5rem; }
-    .year-tab { padding: .4rem 1rem; border: 2px solid #2a3a5c; background: transparent; color: #8b9dc3; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: .85rem; }
-    .year-tab.active, .year-tab:hover { background: #6b2d2d; color: #fff; border-color: #6b2d2d; }
+    .top-bar { background: #16213e; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; }
+    .top-bar h1 { font-family: 'Playfair Display', serif; color: #c9a87c; font-size: 1.2rem; }
+    .top-bar .class-tabs { display: flex; gap: .35rem; flex-wrap: wrap; }
+    .class-tab { padding: .35rem .75rem; border: 2px solid #2a3a5c; background: transparent; color: #8b9dc3; border-radius: 20px; cursor: pointer; font-family: 'Inter', sans-serif; font-size: .8rem; font-weight: 500; }
+    .class-tab.active, .class-tab:hover { background: #6b2d2d; color: #fff; border-color: #6b2d2d; }
 
-    .main { padding: 1.5rem 2rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .main { padding: 1.5rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     @media (max-width: 900px) { .main { grid-template-columns: 1fr; } }
 
     /* Panels */
     .panel { background: #16213e; border-radius: 10px; padding: 1.25rem; }
-    .panel h2 { font-family: 'Inter', sans-serif; font-size: 1.1rem; font-weight: 600; color: #c9a87c; margin-bottom: 1rem; }
+    .panel h2 { font-family: 'Inter', sans-serif; font-size: 1.05rem; font-weight: 600; color: #c9a87c; margin-bottom: 1rem; }
 
     /* Stage Controls */
-    .stage-row { display: flex; align-items: center; justify-content: space-between; padding: .65rem .75rem; background: #0f3460; border-radius: 8px; margin-bottom: .5rem; }
-    .stage-name { font-weight: 500; font-size: .9rem; }
-    .toggle-wrap { position: relative; width: 48px; height: 26px; }
+    .stage-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem .75rem; background: #0f3460; border-radius: 8px; margin-bottom: .4rem; }
+    .stage-name { font-weight: 500; font-size: .85rem; }
+    .toggle-wrap { position: relative; width: 44px; height: 24px; }
     .toggle-input { opacity: 0; width: 0; height: 0; }
-    .toggle-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #2a3a5c; border-radius: 13px; cursor: pointer; transition: .3s; }
-    .toggle-slider::before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; bottom: 3px; background: #8b9dc3; border-radius: 50%; transition: .3s; }
+    .toggle-slider { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: #2a3a5c; border-radius: 12px; cursor: pointer; transition: .3s; }
+    .toggle-slider::before { content: ''; position: absolute; width: 18px; height: 18px; left: 3px; bottom: 3px; background: #8b9dc3; border-radius: 50%; transition: .3s; }
     .toggle-input:checked + .toggle-slider { background: #4a8c5c; }
-    .toggle-input:checked + .toggle-slider::before { transform: translateX(22px); background: #fff; }
-    .unlock-all-btn { width: 100%; padding: .6rem; background: #4a8c5c; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: .75rem; }
+    .toggle-input:checked + .toggle-slider::before { transform: translateX(20px); background: #fff; }
+    .quick-btns { display: flex; gap: .5rem; margin-top: .75rem; }
+    .quick-btns button { flex: 1; padding: .5rem; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: .8rem; }
+    .unlock-all-btn { background: #4a8c5c; color: #fff; }
     .unlock-all-btn:hover { background: #3a7a4c; }
-    .lock-all-btn { width: 100%; padding: .6rem; background: #6b2d2d; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; margin-top: .5rem; }
+    .lock-all-btn { background: #6b2d2d; color: #fff; }
     .lock-all-btn:hover { background: #8b3e3e; }
 
     /* Student List */
-    .student-row { display: flex; align-items: center; gap: .75rem; padding: .6rem .75rem; background: #0f3460; border-radius: 8px; margin-bottom: .4rem; font-size: .85rem; }
-    .student-row .s-avatar { font-size: 1.3rem; }
+    .student-row { display: flex; align-items: center; gap: .6rem; padding: .5rem .6rem; background: #0f3460; border-radius: 8px; margin-bottom: .35rem; font-size: .8rem; }
+    .student-row .s-avatar { font-size: 1.2rem; }
     .student-row .s-name { flex: 1; font-weight: 500; }
-    .student-row .s-stage { color: #c9a87c; font-size: .8rem; }
+    .student-row .s-stage { color: #c9a87c; font-size: .75rem; }
     .student-row .s-online { width: 8px; height: 8px; border-radius: 50%; }
     .s-online.on { background: #4a8c5c; }
     .s-online.off { background: #555; }
-    .student-row .s-score { color: #8b9dc3; font-size: .8rem; min-width: 60px; text-align: right; }
+    .student-row .s-score { color: #8b9dc3; font-size: .75rem; min-width: 50px; text-align: right; }
+
+    /* Attendance */
+    .attendance-panel { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #2a3a5c; }
+    .attendance-panel h3 { font-size: .9rem; color: #8b9dc3; margin-bottom: .5rem; }
+    .att-row { display: flex; align-items: center; gap: .5rem; padding: .3rem .5rem; font-size: .78rem; border-radius: 4px; margin-bottom: .2rem; }
+    .att-row.present { color: #4a8c5c; }
+    .att-row.absent { color: #ef5350; }
+    .att-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .att-row.present .att-dot { background: #4a8c5c; }
+    .att-row.absent .att-dot { background: #ef5350; }
+    .att-summary { font-size: .8rem; color: #8b9dc3; margin-bottom: .5rem; }
 
     /* Broadcast */
     .broadcast-input { display: flex; gap: .5rem; margin-top: .5rem; }
-    .broadcast-input input { flex: 1; padding: .5rem .75rem; background: #0f3460; border: 1px solid #2a3a5c; color: #fff; border-radius: 6px; font-size: .9rem; }
-    .broadcast-input button { padding: .5rem 1rem; background: #c9a87c; color: #1a1a2e; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; }
+    .broadcast-input input { flex: 1; padding: .45rem .65rem; background: #0f3460; border: 1px solid #2a3a5c; color: #fff; border-radius: 6px; font-size: .85rem; }
+    .broadcast-input button { padding: .45rem .85rem; background: #c9a87c; color: #1a1a2e; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: .85rem; }
 
     /* Scores Table */
-    .scores-table { width: 100%; border-collapse: collapse; font-size: .8rem; }
-    .scores-table th { text-align: left; padding: .5rem; color: #c9a87c; border-bottom: 1px solid #2a3a5c; }
-    .scores-table td { padding: .5rem; border-bottom: 1px solid #0f3460; }
+    .scores-table { width: 100%; border-collapse: collapse; font-size: .78rem; }
+    .scores-table th { text-align: left; padding: .45rem; color: #c9a87c; border-bottom: 1px solid #2a3a5c; }
+    .scores-table td { padding: .45rem; border-bottom: 1px solid #0f3460; }
     .scores-table .highlight { color: #4a8c5c; font-weight: 600; }
 
     /* Actions */
-    .actions-row { display: flex; gap: .75rem; flex-wrap: wrap; margin-top: 1rem; }
-    .action-btn { padding: .5rem 1.25rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: .85rem; }
+    .actions-row { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .action-btn { padding: .45rem 1rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: .8rem; }
     .action-btn.danger { background: #b33a3a; color: #fff; }
     .action-btn.danger:hover { background: #d32f2f; }
     .action-btn.info { background: #2a3a5c; color: #8b9dc3; }
     .action-btn.info:hover { background: #3a4a6c; }
 
-    /* Print summary */
+    /* Print */
     .print-area { display: none; }
     @media print {
       body { background: #fff; color: #000; }
@@ -106,39 +119,41 @@
 <!-- DASHBOARD -->
 <div id="dashboard" class="dashboard">
   <div class="top-bar no-print">
-    <h1>FPA French Restaurant — Teacher Control</h1>
-    <div class="year-tabs">
-      <button class="year-tab active" data-y="7">Year 7</button>
-      <button class="year-tab" data-y="8">Year 8</button>
-      <button class="year-tab" data-y="9">Year 9</button>
-      <button class="year-tab" data-y="10">Year 10</button>
-    </div>
+    <h1>FPA French Restaurant — Teacher</h1>
+    <div class="class-tabs" id="class-tabs"></div>
   </div>
 
   <div class="main">
     <!-- Stage Controls -->
     <div class="panel no-print">
-      <h2>Stage Controls — <span id="panel-year">Year 7</span></h2>
+      <h2>Stage Controls — <span id="panel-class">G7.1</span></h2>
       <div id="stage-controls"></div>
-      <button class="unlock-all-btn" id="btn-unlock-all">Unlock All Stages</button>
-      <button class="lock-all-btn" id="btn-lock-all">Lock All Stages</button>
+      <div class="quick-btns">
+        <button class="unlock-all-btn" id="btn-unlock-all">Unlock All</button>
+        <button class="lock-all-btn" id="btn-lock-all">Lock All</button>
+      </div>
 
-      <h2 style="margin-top:1.5rem">Broadcast Message</h2>
+      <h2 style="margin-top:1.25rem">Broadcast Message</h2>
       <div class="broadcast-input">
-        <input type="text" id="broadcast-text" placeholder="Type a message to all students...">
+        <input type="text" id="broadcast-text" placeholder="Message to all students…">
         <button id="btn-broadcast">Send</button>
       </div>
 
       <div class="actions-row">
-        <button class="action-btn danger" id="btn-reset">Reset Class Data</button>
+        <button class="action-btn danger" id="btn-reset">Reset Class</button>
         <button class="action-btn info" id="btn-print">Print Summary</button>
       </div>
     </div>
 
-    <!-- Students Live -->
+    <!-- Students Live + Attendance -->
     <div class="panel">
-      <h2>Students <span id="student-count">(0)</span></h2>
+      <h2>Students Online <span id="student-count">(0)</span></h2>
       <div id="student-list"></div>
+      <div class="attendance-panel">
+        <h3>Attendance</h3>
+        <div id="att-summary" class="att-summary"></div>
+        <div id="att-list"></div>
+      </div>
     </div>
 
     <!-- Scores -->
@@ -152,7 +167,7 @@
             <th>Multiple Choice</th>
             <th>Drag & Drop</th>
             <th>Total</th>
-            <th>Total Time</th>
+            <th>Time</th>
           </tr>
         </thead>
         <tbody id="scores-body"></tbody>
@@ -164,6 +179,7 @@
 <script src="firebase-config.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="classes.js"></script>
 <script>
 (function() {
   'use strict';
@@ -172,7 +188,7 @@
   const AVATARS = ['\u{1F468}\u200D\u{1F373}','\u{1F9D1}\u200D\u{1F373}','\u{1F469}\u200D\u{1F373}','\u{1F37D}\uFE0F','\u{1F950}','\u{1F354}','\u{1F370}','\u{1F355}','\u{1F96A}','\u{1F9C1}','\u{1F382}','\u{1F363}','\u{1F95E}','\u{1F32E}','\u{1F366}'];
   const STAGE_NAMES = { vocab: 'Vocabulary', menu: 'Menu', roleplay: 'Roleplay', tf: 'True/False', mc: 'Multiple Choice', dd: 'Drag & Drop', scenario: 'Scenario', review: 'Review' };
 
-  let db, currentYear = 7;
+  let db, currentClassId = 'g71';
 
   // Login
   document.getElementById('pwd-btn').addEventListener('click', tryLogin);
@@ -185,54 +201,64 @@
       document.getElementById('dashboard').classList.add('active');
       firebase.initializeApp(firebaseConfig);
       db = firebase.database();
+      buildClassTabs();
       setupDashboard();
     } else {
       document.getElementById('pwd-error').textContent = 'Incorrect password.';
     }
   }
 
-  function setupDashboard() {
-    // Year tabs
-    document.querySelectorAll('.year-tab').forEach(tab => {
-      tab.addEventListener('click', () => {
-        document.querySelectorAll('.year-tab').forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-        currentYear = parseInt(tab.dataset.y);
-        document.getElementById('panel-year').textContent = 'Year ' + currentYear;
-        watchYear();
+  function buildClassTabs() {
+    const container = document.getElementById('class-tabs');
+    container.innerHTML = '';
+    Object.keys(CLASS_CONFIG).forEach(cid => {
+      const cfg = CLASS_CONFIG[cid];
+      const btn = document.createElement('button');
+      btn.className = 'class-tab' + (cid === currentClassId ? ' active' : '');
+      btn.textContent = cfg.label;
+      btn.dataset.cid = cid;
+      btn.addEventListener('click', () => {
+        container.querySelectorAll('.class-tab').forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        currentClassId = cid;
+        document.getElementById('panel-class').textContent = cfg.label;
+        watchClass();
       });
+      container.appendChild(btn);
     });
+  }
+
+  function setupDashboard() {
+    document.getElementById('panel-class').textContent = CLASS_CONFIG[currentClassId].label;
 
     // Unlock/Lock all
     document.getElementById('btn-unlock-all').addEventListener('click', () => {
       const updates = {};
       Object.keys(STAGE_NAMES).forEach(s => { updates[s] = { unlocked: true }; });
-      db.ref('classes/y' + currentYear + '/settings/stages').set(updates);
+      db.ref('classes/' + currentClassId + '/settings/stages').set(updates);
     });
     document.getElementById('btn-lock-all').addEventListener('click', () => {
       const updates = {};
       Object.keys(STAGE_NAMES).forEach(s => { updates[s] = { unlocked: false }; });
-      db.ref('classes/y' + currentYear + '/settings/stages').set(updates);
+      db.ref('classes/' + currentClassId + '/settings/stages').set(updates);
     });
 
-    // Broadcast
+    // Broadcast — send to current class only
     document.getElementById('btn-broadcast').addEventListener('click', () => {
       const text = document.getElementById('broadcast-text').value.trim();
       if (!text) return;
-      // Send to all year groups
-      [7,8,9,10].forEach(y => {
-        db.ref('classes/y' + y + '/settings/broadcast').set({ text, time: firebase.database.ServerValue.TIMESTAMP });
-      });
+      db.ref('classes/' + currentClassId + '/settings/broadcast').set({ text, time: firebase.database.ServerValue.TIMESTAMP });
       document.getElementById('broadcast-text').value = '';
     });
 
     // Reset
     document.getElementById('btn-reset').addEventListener('click', () => {
-      if (confirm('Are you sure you want to reset ALL data for Year ' + currentYear + '? This will remove all students and scores.')) {
+      const label = CLASS_CONFIG[currentClassId].label;
+      if (confirm('Reset ALL data for ' + label + '? This removes all students and scores.')) {
         const pwd = prompt('Enter teacher password to confirm:');
         if (pwd === TEACHER_PWD) {
-          db.ref('classes/y' + currentYear).remove();
-          alert('Year ' + currentYear + ' data has been reset.');
+          db.ref('classes/' + currentClassId).remove();
+          alert(label + ' data has been reset.');
         }
       }
     });
@@ -240,36 +266,35 @@
     // Print
     document.getElementById('btn-print').addEventListener('click', () => window.print());
 
-    watchYear();
+    watchClass();
   }
 
-  function watchYear() {
-    const ref = db.ref('classes/y' + currentYear);
+  let stageListener = null, studentListener = null, attendanceListener = null;
 
-    // Stage controls
-    ref.child('settings/stages').on('value', snap => {
-      const stages = snap.val() || {};
-      const container = document.getElementById('stage-controls');
-      container.innerHTML = '';
+  function watchClass() {
+    const ref = db.ref('classes/' + currentClassId);
 
-      Object.entries(STAGE_NAMES).forEach(([key, name]) => {
-        const unlocked = stages[key] && stages[key].unlocked;
-        const row = document.createElement('div');
-        row.className = 'stage-row';
-        row.innerHTML =
-          '<span class="stage-name">' + name + '</span>' +
-          '<label class="toggle-wrap">' +
-          '<input type="checkbox" class="toggle-input" data-stage="' + key + '" ' + (unlocked ? 'checked' : '') + '>' +
-          '<span class="toggle-slider"></span></label>';
-        row.querySelector('.toggle-input').addEventListener('change', function() {
-          db.ref('classes/y' + currentYear + '/settings/stages/' + this.dataset.stage + '/unlocked').set(this.checked);
-        });
-        container.appendChild(row);
-      });
+    // Detach old listeners
+    if (stageListener) stageListener();
+    if (studentListener) studentListener();
+    if (attendanceListener) attendanceListener();
+
+    // Render stage toggles immediately with default locked state
+    renderStageToggles({});
+
+    // Then watch Firebase for actual state
+    const stageRef = ref.child('settings/stages');
+    const stageHandler = stageRef.on('value', snap => {
+      renderStageToggles(snap.val() || {});
+    }, err => {
+      console.warn('Stage read error:', err.message);
+      // Toggles already rendered with defaults
     });
+    stageListener = () => stageRef.off('value', stageHandler);
 
     // Students
-    ref.child('students').on('value', snap => {
+    const studRef = ref.child('students');
+    const studHandler = studRef.on('value', snap => {
       const students = snap.val() || {};
       const list = document.getElementById('student-list');
       const body = document.getElementById('scores-body');
@@ -278,11 +303,9 @@
 
       const entries = Object.entries(students);
       document.getElementById('student-count').textContent = '(' + entries.length + ')';
-
       entries.sort((a, b) => (a[1].name || '').localeCompare(b[1].name || ''));
 
       entries.forEach(([id, s]) => {
-        // Student row
         const row = document.createElement('div');
         row.className = 'student-row';
         const totalScore = calcTotal(s.scores);
@@ -294,7 +317,6 @@
           '<span class="s-score">' + (totalScore.total > 0 ? totalScore.score + '/' + totalScore.total : '-') + '</span>';
         list.appendChild(row);
 
-        // Scores row
         const tr = document.createElement('tr');
         const scores = s.scores || {};
         tr.innerHTML =
@@ -306,6 +328,68 @@
           '<td>' + (totalScore.time > 0 ? fmtTime(totalScore.time) : '-') + '</td>';
         body.appendChild(tr);
       });
+
+      // Update attendance display
+      updateAttendance(students);
+    }, err => {
+      console.warn('Students read error:', err.message);
+      updateAttendance({});
+    });
+    studentListener = () => studRef.off('value', studHandler);
+
+    // Show attendance immediately (all absent until Firebase data arrives)
+    updateAttendance({});
+  }
+
+  function renderStageToggles(stages) {
+    const container = document.getElementById('stage-controls');
+    container.innerHTML = '';
+    Object.entries(STAGE_NAMES).forEach(([key, name]) => {
+      const unlocked = stages[key] && stages[key].unlocked;
+      const row = document.createElement('div');
+      row.className = 'stage-row';
+      row.innerHTML =
+        '<span class="stage-name">' + name + '</span>' +
+        '<label class="toggle-wrap">' +
+        '<input type="checkbox" class="toggle-input" data-stage="' + key + '" ' + (unlocked ? 'checked' : '') + '>' +
+        '<span class="toggle-slider"></span></label>';
+      row.querySelector('.toggle-input').addEventListener('change', function() {
+        db.ref('classes/' + currentClassId + '/settings/stages/' + this.dataset.stage + '/unlocked').set(this.checked);
+      });
+      container.appendChild(row);
+    });
+  }
+
+  function updateAttendance(onlineStudents) {
+    const cfg = CLASS_CONFIG[currentClassId];
+    if (!cfg) return;
+
+    const signedIn = new Set();
+    Object.values(onlineStudents).forEach(s => { if (s.name) signedIn.add(s.name); });
+
+    const roster = cfg.students.filter(n => !n.startsWith('Guest'));
+    const present = roster.filter(n => signedIn.has(n));
+    const absent = roster.filter(n => !signedIn.has(n));
+
+    document.getElementById('att-summary').textContent =
+      present.length + '/' + roster.length + ' present' +
+      (absent.length > 0 ? ' \u2014 ' + absent.length + ' absent' : '');
+
+    const list = document.getElementById('att-list');
+    list.innerHTML = '';
+
+    absent.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'att-row absent';
+      row.innerHTML = '<span class="att-dot"></span><span>' + esc(name) + '</span>';
+      list.appendChild(row);
+    });
+
+    present.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'att-row present';
+      row.innerHTML = '<span class="att-dot"></span><span>' + esc(name) + '</span>';
+      list.appendChild(row);
     });
   }
 

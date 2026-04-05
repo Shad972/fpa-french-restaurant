@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FPA French Restaurant Activity</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -30,8 +30,14 @@
     </div>
     <div class="profile-card">
       <h2>Create Your Profile</h2>
-      <p class="hint">Enter your first name to get started.</p>
-      <input type="text" id="input-name" placeholder="Your first name" maxlength="20" autocomplete="off">
+      <p class="hint">Select your name from the list below.</p>
+      <div id="name-dropdown-wrap" class="name-dropdown-wrap">
+        <div id="name-selected" class="name-selected">Choose your name…</div>
+        <div class="name-dropdown-body">
+          <input type="text" id="name-search" class="name-search" placeholder="Search your name…" autocomplete="off">
+          <ul id="name-options" class="name-options"></ul>
+        </div>
+      </div>
       <h3>Choose Your Avatar</h3>
       <div id="avatar-grid" class="avatar-grid"></div>
       <button id="btn-join" class="btn-primary" disabled>Join the Class</button>
@@ -283,6 +289,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="data.js"></script>
+<script src="classes.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
