@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FPA French Restaurant Activity</title>
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
@@ -238,12 +238,88 @@
 </section>
 
 <!-- ═══════════════════════════════════════════════
+     SCREEN: ROLEPLAY GAME (Flashcard Scenarios)
+     ═══════════════════════════════════════════════ -->
+<section id="screen-rpgame" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 7</span>
+      <h2>Jeu de Rôle — Choose Your Scenario!</h2>
+      <p>Pick a situation card, then play the customer! Choose the correct French response at each step.</p>
+    </div>
+
+    <!-- Flashcard grid (8 cards) -->
+    <div id="rpg-cards" class="rpg-cards"></div>
+
+    <!-- Active scenario play area (hidden until a card is picked) -->
+    <div id="rpg-play" class="rpg-play hidden">
+      <div class="rpg-scenario-header">
+        <div id="rpg-scenario-icon" class="rpg-scenario-icon"></div>
+        <div>
+          <h3 id="rpg-scenario-title"></h3>
+          <p id="rpg-scenario-context" class="rpg-context"></p>
+        </div>
+      </div>
+      <div class="rpg-progress-bar"><div id="rpg-progress-fill" class="rpg-progress-fill"></div></div>
+      <div id="rpg-dialogue" class="rpg-dialogue"></div>
+      <div id="rpg-choices" class="rpg-choices hidden">
+        <h4 id="rpg-prompt">What do you say?</h4>
+        <div id="rpg-options" class="rpg-options"></div>
+      </div>
+      <div id="rpg-feedback" class="rpg-feedback hidden"></div>
+      <button id="rpg-next-btn" class="btn-secondary hidden">Continue</button>
+    </div>
+
+    <!-- Scenario result -->
+    <div id="rpg-result" class="rpg-result hidden">
+      <h3 id="rpg-result-title"></h3>
+      <p id="rpg-result-score"></p>
+      <div id="rpg-result-summary"></div>
+      <button id="rpg-back-btn" class="btn-secondary">Choose Another Scenario</button>
+    </div>
+
+    <button id="btn-rpgame-done" class="btn-primary hidden">Continue to Review Matching</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
+     SCREEN: REVIEW MATCHING (Who Left Which Review?)
+     ═══════════════════════════════════════════════ -->
+<section id="screen-revmatch" class="screen">
+  <div class="stage-container">
+    <div class="stage-header">
+      <span class="stage-badge">Stage 8</span>
+      <h2>Qui a écrit cet avis ?</h2>
+      <p>Four customers visited the restaurant. Read their reviews and work out who wrote what!</p>
+    </div>
+
+    <!-- Character cards -->
+    <div id="rm-characters" class="rm-characters"></div>
+
+    <!-- Reviews to match -->
+    <div id="rm-reviews" class="rm-reviews"></div>
+
+    <!-- Matching area -->
+    <div id="rm-matching" class="rm-matching hidden">
+      <h3>Match each review to its author</h3>
+      <div id="rm-match-grid" class="rm-match-grid"></div>
+      <button id="rm-check-btn" class="btn-primary">Check Answers</button>
+    </div>
+
+    <!-- Result -->
+    <div id="rm-result" class="rm-result hidden"></div>
+
+    <button id="btn-revmatch-done" class="btn-primary hidden">Continue to Scenario Builder</button>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════
      SCREEN: SCENARIO BUILDER
      ═══════════════════════════════════════════════ -->
 <section id="screen-scenario" class="screen">
   <div class="stage-container">
     <div class="stage-header">
-      <span class="stage-badge">Stage 7</span>
+      <span class="stage-badge">Stage 9</span>
       <h2>Create Your Own Scenario</h2>
       <p id="scenario-instruction"></p>
     </div>
@@ -289,6 +365,7 @@
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script src="data.js"></script>
+<script src="rpg-data.js"></script>
 <script src="classes.js"></script>
 <script src="app.js"></script>
 </body>

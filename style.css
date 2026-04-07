@@ -478,3 +478,184 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .podium-2nd .podium-base { width: 80px; height: 55px; }
   .podium-3rd .podium-base { width: 70px; height: 40px; }
 }
+
+/* ═══════════════════════════════════════════════
+   ROLEPLAY GAME — Flashcard Scenarios
+   ═══════════════════════════════════════════════ */
+.rpg-cards {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+  max-width: 900px; margin: 1.5rem auto; perspective: 1000px;
+}
+.rpg-card {
+  aspect-ratio: 3/4; cursor: pointer; position: relative;
+  border-radius: 12px; border: 3px solid #ccc;
+  transition: transform .15s;
+}
+.rpg-card:hover { transform: translateY(-4px); }
+.rpg-card-inner {
+  width: 100%; height: 100%; position: relative;
+  transform-style: preserve-3d; transition: transform .6s;
+}
+.rpg-card.flipped .rpg-card-inner { transform: rotateY(180deg); }
+.rpg-card-front, .rpg-card-back {
+  position: absolute; width: 100%; height: 100%;
+  backface-visibility: hidden; border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1rem; text-align: center;
+}
+.rpg-card-front { color: #fff; }
+.rpg-card-icon { font-size: 3rem; margin-bottom: .5rem; }
+.rpg-card-num { font-family: 'Playfair Display', serif; font-size: 1rem; opacity: .9; }
+.rpg-card-back {
+  background: #fff; transform: rotateY(180deg);
+  box-shadow: 0 4px 15px rgba(0,0,0,.12);
+}
+.rpg-card-icon-sm { font-size: 2rem; margin-bottom: .3rem; }
+.rpg-card-back h4 { font-size: .95rem; color: #1a237e; margin-bottom: .2rem; }
+.rpg-card-titlefr { font-style: italic; color: #757575; font-size: .8rem; margin-bottom: .5rem; }
+.rpg-card-ctx { font-size: .75rem; color: #555; line-height: 1.4; flex: 1; }
+.rpg-play-btn { margin-top: .5rem; font-size: .8rem; padding: .4rem 1rem; }
+
+/* RPG Play Area */
+.rpg-play { max-width: 800px; margin: 0 auto; }
+.rpg-scenario-header {
+  display: flex; align-items: center; gap: 1rem;
+  padding: 1rem; background: #f5f0ea; border-radius: 12px; margin-bottom: 1rem;
+}
+.rpg-scenario-icon { font-size: 2.5rem; }
+.rpg-scenario-header h3 { color: #1a237e; margin: 0 0 .25rem; font-family: 'Playfair Display', serif; }
+.rpg-context { color: #555; font-size: .9rem; margin: 0; }
+
+.rpg-progress-bar {
+  height: 6px; background: #e0e0e0; border-radius: 3px;
+  margin-bottom: 1.5rem; overflow: hidden;
+}
+.rpg-progress-fill {
+  height: 100%; background: linear-gradient(90deg, #1a237e, #1565c0);
+  border-radius: 3px; transition: width .4s ease;
+}
+
+/* Dialogue bubbles */
+.rpg-dialogue { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1rem; }
+.rpg-bubble {
+  padding: 1rem 1.25rem; border-radius: 12px;
+  max-width: 85%; animation: rpgSlideIn .3s ease-out;
+}
+@keyframes rpgSlideIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+.rpg-waiter {
+  background: #f5f0ea; border-left: 4px solid #8b5e3c; align-self: flex-start;
+}
+.rpg-customer {
+  background: #e3f2fd; border-right: 4px solid #1565c0; align-self: flex-end;
+}
+.rpg-role {
+  font-size: .7rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .05em; margin-bottom: .4rem; opacity: .7;
+}
+.rpg-waiter .rpg-role { color: #8b5e3c; }
+.rpg-customer .rpg-role { color: #1565c0; }
+.rpg-french { font-weight: 600; color: #1a237e; font-size: 1rem; margin: 0 0 .3rem; }
+.rpg-phonetic { font-style: italic; color: #888; font-size: .8rem; margin: 0 0 .2rem; }
+.rpg-english { color: #555; font-size: .85rem; margin: 0; }
+
+/* Choice options */
+.rpg-choices { background: #f9f9f5; border-radius: 12px; padding: 1.25rem; margin-top: 1rem; }
+.rpg-choices h4 { color: #1a237e; margin: 0 0 1rem; font-family: 'Playfair Display', serif; }
+.rpg-options { display: flex; flex-direction: column; gap: .6rem; }
+.rpg-option-btn {
+  display: flex; align-items: flex-start; gap: .75rem;
+  text-align: left; padding: 1rem; border: 2px solid #ddd;
+  border-radius: 10px; background: #fff; cursor: pointer;
+  transition: border-color .2s, box-shadow .2s; font-size: .9rem;
+}
+.rpg-option-btn:hover:not(:disabled) { border-color: #1565c0; box-shadow: 0 2px 8px rgba(21,101,192,.12); }
+.rpg-opt-label {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; min-width: 32px;
+  border-radius: 50%; background: #1a237e; color: #fff;
+  font-weight: 700; font-size: .9rem;
+}
+.rpg-opt-french { display: block; font-weight: 600; color: #1a237e; }
+.rpg-opt-english { display: block; font-size: .8rem; color: #888; margin-top: .15rem; }
+.rpg-option-btn.rpg-correct { border-color: #2e7d32; background: #e8f5e9; }
+.rpg-option-btn.rpg-wrong { border-color: #c62828; background: #ffebee; }
+.rpg-option-btn:disabled { opacity: .85; cursor: default; }
+
+/* Feedback */
+.rpg-feedback { padding: .75rem 1rem; border-radius: 8px; margin-top: .75rem; font-size: .9rem; }
+.rpg-fb-correct { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
+.rpg-fb-wrong { background: #ffebee; color: #c62828; border: 1px solid #ef9a9a; }
+
+#rpg-next-btn { margin-top: .75rem; }
+
+/* Result */
+.rpg-result { text-align: center; padding: 2rem; }
+.rpg-result h3 { font-size: 1.5rem; color: #1a237e; font-family: 'Playfair Display', serif; }
+
+/* ═══════════════════════════════════════════════
+   REVIEW MATCHING — Who Left Which Review?
+   ═══════════════════════════════════════════════ */
+.rm-chars-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
+  margin: 1rem 0 2rem;
+}
+.rm-char-card {
+  background: #fff; border-radius: 12px; padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08); text-align: center;
+}
+.rm-char-emoji { font-size: 2.5rem; margin-bottom: .3rem; }
+.rm-char-card h4 { margin: 0 0 .3rem; font-family: 'Playfair Display', serif; }
+.rm-tagline { font-weight: 600; font-style: italic; color: #333; font-size: .85rem; margin: .3rem 0 .15rem; }
+.rm-tagline-phonetic { font-size: .75rem; color: #999; margin: 0 0 .1rem; }
+.rm-tagline-en { font-size: .8rem; color: #666; margin: 0 0 .5rem; }
+.rm-desc-fr { font-size: .8rem; color: #333; line-height: 1.4; margin: 0 0 .3rem; }
+.rm-desc-en { font-size: .75rem; color: #888; line-height: 1.4; margin: 0; }
+
+/* Reviews */
+#rm-reviews h3 { color: #1a237e; font-family: 'Playfair Display', serif; margin-bottom: 1rem; }
+.rm-review-card {
+  background: #fff; border-radius: 12px; padding: 1.25rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,.08); margin-bottom: 1rem;
+  border-left: 4px solid #ccc; transition: border-color .3s;
+}
+.rm-review-card.rm-correct { border-color: #2e7d32; background: #f1f8e9; }
+.rm-review-card.rm-wrong { border-color: #c62828; background: #fff8f8; }
+
+.rm-review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .75rem; }
+.rm-stars { font-size: 1.1rem; }
+.rm-review-num { font-size: .8rem; color: #999; font-weight: 600; }
+.rm-review-french { font-size: .9rem; color: #1a237e; line-height: 1.6; margin-bottom: .75rem; }
+.rm-translation-toggle { margin-bottom: .75rem; }
+.rm-translation-toggle summary { cursor: pointer; color: #1565c0; font-size: .85rem; }
+.rm-review-english { font-size: .85rem; color: #555; line-height: 1.5; margin-top: .5rem; }
+
+.rm-review-select { display: flex; align-items: center; gap: .5rem; }
+.rm-review-select label { font-size: .85rem; color: #555; }
+.rm-select {
+  padding: .4rem .75rem; border: 2px solid #1a237e; border-radius: 8px;
+  font-size: .9rem; color: #1a237e; background: #fff; cursor: pointer;
+}
+
+.rm-result-badge {
+  display: inline-block; padding: .35rem .75rem; border-radius: 6px;
+  font-size: .85rem; font-weight: 600;
+}
+.rm-badge-correct { background: #e8f5e9; color: #2e7d32; }
+.rm-badge-wrong { background: #ffebee; color: #c62828; }
+
+#rm-result { text-align: center; padding: 1.5rem; }
+#rm-result h3 { font-family: 'Playfair Display', serif; color: #1a237e; font-size: 1.3rem; }
+
+#rm-matching { margin-top: 1rem; }
+#rm-matching h3 { color: #1a237e; text-align: center; margin-bottom: 1rem; }
+
+/* Responsive */
+@media (max-width: 768px) {
+  .rpg-cards { grid-template-columns: repeat(2, 1fr); }
+  .rm-chars-grid { grid-template-columns: repeat(2, 1fr); }
+  .rpg-bubble { max-width: 95%; }
+}
+@media (max-width: 480px) {
+  .rpg-cards { grid-template-columns: 1fr 1fr; gap: .5rem; }
+  .rm-chars-grid { grid-template-columns: 1fr 1fr; }
+}

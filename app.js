@@ -23,7 +23,7 @@ const APP = (function () {
     '\u{1F96A}','\u{1F9C1}','\u{1F382}','\u{1F363}','\u{1F95E}','\u{1F32E}','\u{1F366}'
   ];
 
-  const STAGE_ORDER = ['vocab','menu','roleplay','tf','mc','dd','scenario','review','hall'];
+  const STAGE_ORDER = ['vocab','menu','roleplay','tf','mc','dd','rpgame','revmatch','scenario','review','hall'];
 
   /* --- Quiz state --- */
   let tfIndex = 0, tfScore = 0, tfAnswers = [], tfTimer = null, tfSeconds = 0;
@@ -313,7 +313,7 @@ const APP = (function () {
 
       // Find the first unlocked stage that the student hasn't completed
       const assessedStages = ['tf', 'mc', 'dd'];
-      const stageFlow = ['vocab','menu','roleplay','tf','mc','dd','scenario','review'];
+      const stageFlow = ['vocab','menu','roleplay','tf','mc','dd','rpgame','revmatch','scenario','review'];
 
       for (const stage of stageFlow) {
         if (!stages[stage] || !stages[stage].unlocked) continue;
@@ -352,6 +352,8 @@ const APP = (function () {
       case 'tf': initTrueFalse(); break;
       case 'mc': initMultipleChoice(); break;
       case 'dd': initDragDrop(); break;
+      case 'rpgame': initRpGame(); break;
+      case 'revmatch': initRevMatch(); break;
       case 'scenario': initScenario(); break;
       case 'review': initReview(); break;
       default: showScreen('locked');
@@ -716,6 +718,337 @@ const APP = (function () {
     document.getElementById('btn-dd-submit').disabled = true;
     saveScore('dd', ddScore, ddPairs.length, ddSeconds, ddResults);
     setTimeout(() => proceedToNext('dd'), 3000);
+  }
+
+  /* ─────────────────────────────────────────────
+     ROLEPLAY GAME (Flashcard Scenarios)
+     ───────────────────────────────────────────── */
+  let rpgCompleted = 0;
+  let rpgCurrentScenario = null;
+  let rpgExchangeIdx = 0;
+  let rpgScore = 0;
+  let rpgTotal = 0;
+
+  function initRpGame() {
+    showScreen('rpgame');
+    rpgCompleted = 0;
+    const cardsEl = document.getElementById('rpg-cards');
+    const playEl = document.getElementById('rpg-play');
+    const resultEl = document.getElementById('rpg-result');
+    playEl.classList.add('hidden');
+    resultEl.classList.add('hidden');
+    cardsEl.classList.remove('hidden');
+    document.getElementById('btn-rpgame-done').classList.add('hidden');
+
+    cardsEl.innerHTML = '';
+    RPG_SCENARIOS.forEach((sc, i) => {
+      const card = document.createElement('div');
+      card.className = 'rpg-card';
+      card.style.borderColor = sc.colour;
+      card.dataset.idx = i;
+      card.innerHTML =
+        '<div class="rpg-card-inner">' +
+          '<div class="rpg-card-front" style="background:' + sc.colour + '">' +
+            '<span class="rpg-card-icon">' + sc.icon + '</span>' +
+            '<span class="rpg-card-num">Scenario ' + (i + 1) + '</span>' +
+          '</div>' +
+          '<div class="rpg-card-back">' +
+            '<span class="rpg-card-icon-sm">' + sc.icon + '</span>' +
+            '<h4>' + escHtml(sc.title) + '</h4>' +
+            '<p class="rpg-card-titlefr">' + escHtml(sc.titleFr) + '</p>' +
+            '<p class="rpg-card-ctx">' + escHtml(sc.context) + '</p>' +
+            '<button class="btn-secondary rpg-play-btn">Play this scenario</button>' +
+          '</div>' +
+        '</div>';
+      card.addEventListener('click', function(e) {
+        if (card.classList.contains('flipped') && !e.target.classList.contains('rpg-play-btn')) return;
+        if (!card.classList.contains('flipped')) { card.classList.add('flipped'); return; }
+      });
+      cardsEl.appendChild(card);
+    });
+
+    cardsEl.addEventListener('click', function(e) {
+      if (e.target.classList.contains('rpg-play-btn')) {
+        const cardEl = e.target.closest('.rpg-card');
+        const idx = parseInt(cardEl.dataset.idx);
+        startRpScenario(idx);
+      }
+    });
+  }
+
+  function startRpScenario(idx) {
+    rpgCurrentScenario = RPG_SCENARIOS[idx];
+    rpgExchangeIdx = 0;
+    rpgScore = 0;
+    rpgTotal = 0;
+
+    document.getElementById('rpg-cards').classList.add('hidden');
+    document.getElementById('rpg-result').classList.add('hidden');
+    const playEl = document.getElementById('rpg-play');
+    playEl.classList.remove('hidden');
+
+    document.getElementById('rpg-scenario-icon').textContent = rpgCurrentScenario.icon;
+    document.getElementById('rpg-scenario-title').textContent = rpgCurrentScenario.title;
+    document.getElementById('rpg-scenario-context').textContent = rpgCurrentScenario.context;
+    document.getElementById('rpg-dialogue').innerHTML = '';
+    document.getElementById('rpg-progress-fill').style.width = '0%';
+
+    advanceRpExchange();
+  }
+
+  function advanceRpExchange() {
+    const sc = rpgCurrentScenario;
+    if (rpgExchangeIdx >= sc.exchanges.length) {
+      finishRpScenario();
+      return;
+    }
+
+    const ex = sc.exchanges[rpgExchangeIdx];
+    const dialogue = document.getElementById('rpg-dialogue');
+    const choicesEl = document.getElementById('rpg-choices');
+    const feedbackEl = document.getElementById('rpg-feedback');
+    const nextBtn = document.getElementById('rpg-next-btn');
+    choicesEl.classList.add('hidden');
+    feedbackEl.classList.add('hidden');
+    nextBtn.classList.add('hidden');
+
+    if (ex.speaker === 'waiter') {
+      // Waiter line — auto-display
+      const bubble = document.createElement('div');
+      bubble.className = 'rpg-bubble rpg-waiter';
+      bubble.innerHTML =
+        '<div class="rpg-role">WAITER</div>' +
+        '<p class="rpg-french">' + escHtml(ex.french) + '</p>' +
+        '<p class="rpg-phonetic">' + escHtml(ex.phonetic) + '</p>' +
+        '<p class="rpg-english">' + escHtml(ex.english) + '</p>';
+      dialogue.appendChild(bubble);
+      bubble.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      rpgExchangeIdx++;
+      // Small delay then advance
+      setTimeout(() => advanceRpExchange(), 800);
+    } else {
+      // Customer turn — show choices
+      rpgTotal++;
+      choicesEl.classList.remove('hidden');
+      document.getElementById('rpg-prompt').textContent = ex.prompt;
+      const optionsEl = document.getElementById('rpg-options');
+      optionsEl.innerHTML = '';
+
+      const labels = ['A', 'B', 'C', 'D'];
+      ex.options.forEach((opt, oi) => {
+        const btn = document.createElement('button');
+        btn.className = 'rpg-option-btn';
+        btn.innerHTML =
+          '<span class="rpg-opt-label">' + labels[oi] + '</span>' +
+          '<span class="rpg-opt-french">' + escHtml(opt.french) + '</span>' +
+          '<span class="rpg-opt-english">' + escHtml(opt.english) + '</span>';
+        btn.addEventListener('click', () => handleRpChoice(oi));
+        optionsEl.appendChild(btn);
+      });
+
+      choicesEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Update progress
+    const total = sc.exchanges.length;
+    const pct = Math.round((rpgExchangeIdx / total) * 100);
+    document.getElementById('rpg-progress-fill').style.width = pct + '%';
+  }
+
+  function handleRpChoice(chosenIdx) {
+    const ex = rpgCurrentScenario.exchanges[rpgExchangeIdx];
+    const isCorrect = chosenIdx === ex.correct;
+    const chosen = ex.options[chosenIdx];
+    const correct = ex.options[ex.correct];
+
+    if (isCorrect) rpgScore++;
+
+    // Disable all option buttons
+    const allBtns = document.querySelectorAll('.rpg-option-btn');
+    allBtns.forEach((btn, i) => {
+      btn.disabled = true;
+      if (i === ex.correct) btn.classList.add('rpg-correct');
+      if (i === chosenIdx && !isCorrect) btn.classList.add('rpg-wrong');
+    });
+
+    // Add customer bubble with the CORRECT answer
+    const dialogue = document.getElementById('rpg-dialogue');
+    const bubble = document.createElement('div');
+    bubble.className = 'rpg-bubble rpg-customer';
+    bubble.innerHTML =
+      '<div class="rpg-role">YOU (CUSTOMER)</div>' +
+      '<p class="rpg-french">' + escHtml(correct.french) + '</p>' +
+      '<p class="rpg-phonetic">' + escHtml(correct.phonetic) + '</p>' +
+      '<p class="rpg-english">' + escHtml(correct.english) + '</p>';
+    dialogue.appendChild(bubble);
+
+    // Feedback
+    const feedbackEl = document.getElementById('rpg-feedback');
+    feedbackEl.classList.remove('hidden');
+    if (isCorrect) {
+      feedbackEl.className = 'rpg-feedback rpg-fb-correct';
+      feedbackEl.innerHTML = '<strong>Correct!</strong> Well done.';
+    } else {
+      feedbackEl.className = 'rpg-feedback rpg-fb-wrong';
+      feedbackEl.innerHTML = '<strong>Not quite.</strong> The correct answer was <strong>' + ['A','B','C','D'][ex.correct] + '</strong>.';
+    }
+
+    // Show next button
+    const nextBtn = document.getElementById('rpg-next-btn');
+    nextBtn.classList.remove('hidden');
+    nextBtn.onclick = () => {
+      rpgExchangeIdx++;
+      document.getElementById('rpg-choices').classList.add('hidden');
+      feedbackEl.classList.add('hidden');
+      nextBtn.classList.add('hidden');
+      advanceRpExchange();
+    };
+
+    feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function finishRpScenario() {
+    document.getElementById('rpg-play').classList.add('hidden');
+    const resultEl = document.getElementById('rpg-result');
+    resultEl.classList.remove('hidden');
+
+    const pct = Math.round((rpgScore / rpgTotal) * 100);
+    let emoji = pct >= 80 ? '\u{1F31F}' : pct >= 50 ? '\u{1F44D}' : '\u{1F4AA}';
+    document.getElementById('rpg-result-title').textContent = emoji + ' Scenario Complete!';
+    document.getElementById('rpg-result-score').textContent = rpgScore + ' / ' + rpgTotal + ' correct (' + pct + '%)';
+
+    rpgCompleted++;
+
+    document.getElementById('rpg-back-btn').onclick = () => {
+      resultEl.classList.add('hidden');
+      document.getElementById('rpg-cards').classList.remove('hidden');
+    };
+
+    // Show continue button after at least 2 scenarios completed
+    if (rpgCompleted >= 2) {
+      document.getElementById('btn-rpgame-done').classList.remove('hidden');
+      document.getElementById('btn-rpgame-done').onclick = () => proceedToNext('rpgame');
+    }
+
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  /* ─────────────────────────────────────────────
+     REVIEW MATCHING (Who Left Which Review?)
+     ───────────────────────────────────────────── */
+  let rmSelections = {};
+  let rmRevealed = 0;
+
+  function initRevMatch() {
+    showScreen('revmatch');
+    rmSelections = {};
+    rmRevealed = 0;
+
+    const rmData = REVIEW_MATCH_DATA;
+
+    // Render characters
+    const charsEl = document.getElementById('rm-characters');
+    charsEl.innerHTML = '<h3>Meet the Customers</h3><div class="rm-chars-grid">';
+    rmData.characters.forEach((ch, i) => {
+      charsEl.innerHTML +=
+        '<div class="rm-char-card" style="border-top: 4px solid ' + ch.colour + '">' +
+          '<div class="rm-char-emoji">' + ch.emoji + '</div>' +
+          '<h4 style="color:' + ch.colour + '">' + escHtml(ch.name) + '</h4>' +
+          '<p class="rm-tagline">\u00ab ' + escHtml(ch.tagline) + ' \u00bb</p>' +
+          '<p class="rm-tagline-phonetic">' + escHtml(ch.taglinePhonetic) + '</p>' +
+          '<p class="rm-tagline-en">' + escHtml(ch.taglineEn) + '</p>' +
+          '<p class="rm-desc-fr">' + escHtml(ch.descriptionFr) + '</p>' +
+          '<p class="rm-desc-en">' + escHtml(ch.description) + '</p>' +
+        '</div>';
+    });
+    charsEl.innerHTML += '</div>';
+
+    // Render reviews (shuffled order)
+    const reviewsEl = document.getElementById('rm-reviews');
+    const shuffledReviews = shuffle(rmData.reviews.map((r, i) => ({ ...r, origIdx: i })));
+    reviewsEl.innerHTML = '<h3>The Reviews</h3>';
+    shuffledReviews.forEach((rev, i) => {
+      const starsStr = '\u2B50'.repeat(rev.stars) + '\u2606'.repeat(5 - rev.stars);
+      reviewsEl.innerHTML +=
+        '<div class="rm-review-card" data-review-idx="' + rev.origIdx + '">' +
+          '<div class="rm-review-header">' +
+            '<span class="rm-stars">' + starsStr + '</span>' +
+            '<span class="rm-review-num">Review ' + (i + 1) + '</span>' +
+          '</div>' +
+          '<p class="rm-review-french">' + escHtml(rev.french) + '</p>' +
+          '<details class="rm-translation-toggle">' +
+            '<summary>Show English translation</summary>' +
+            '<p class="rm-review-english">' + escHtml(rev.english) + '</p>' +
+          '</details>' +
+          '<div class="rm-review-select">' +
+            '<label>Who wrote this? </label>' +
+            '<select class="rm-select" data-review="' + rev.origIdx + '">' +
+              '<option value="">-- Choose --</option>' +
+              rmData.characters.map((ch, ci) => '<option value="' + ci + '">' + ch.name + '</option>').join('') +
+            '</select>' +
+          '</div>' +
+        '</div>';
+    });
+
+    // Matching
+    const matchEl = document.getElementById('rm-matching');
+    matchEl.classList.remove('hidden');
+    document.getElementById('rm-match-grid').innerHTML = '';
+
+    document.getElementById('rm-check-btn').onclick = checkRevMatch;
+    document.getElementById('rm-result').classList.add('hidden');
+    document.getElementById('btn-revmatch-done').classList.add('hidden');
+  }
+
+  function checkRevMatch() {
+    const selects = document.querySelectorAll('.rm-select');
+    const rmData = REVIEW_MATCH_DATA;
+    let score = 0;
+    let total = rmData.reviews.length;
+    let allAnswered = true;
+
+    selects.forEach(sel => {
+      if (!sel.value) allAnswered = false;
+    });
+
+    if (!allAnswered) {
+      alert('Please match all four reviews before checking!');
+      return;
+    }
+
+    selects.forEach(sel => {
+      const reviewIdx = parseInt(sel.dataset.review);
+      const chosenChar = parseInt(sel.value);
+      const review = rmData.reviews[reviewIdx];
+      const isCorrect = chosenChar === review.authorIndex;
+
+      sel.disabled = true;
+      const card = sel.closest('.rm-review-card');
+      if (isCorrect) {
+        score++;
+        card.classList.add('rm-correct');
+        sel.parentElement.innerHTML =
+          '<span class="rm-result-badge rm-badge-correct">\u2714 ' + rmData.characters[review.authorIndex].name + ' \u2014 Correct!</span>';
+      } else {
+        card.classList.add('rm-wrong');
+        sel.parentElement.innerHTML =
+          '<span class="rm-result-badge rm-badge-wrong">\u2718 Wrong \u2014 It was <strong>' + rmData.characters[review.authorIndex].name + '</strong></span>';
+      }
+    });
+
+    // Show result
+    const resultEl = document.getElementById('rm-result');
+    resultEl.classList.remove('hidden');
+    const pct = Math.round((score / total) * 100);
+    let msg = score === total ? '\u{1F389} Perfect! You matched all four reviews!' :
+              score >= 3 ? '\u{1F44F} Almost! ' + score + '/4 correct.' :
+              score >= 2 ? '\u{1F914} ' + score + '/4 \u2014 some were tricky!' :
+              '\u{1F4AA} ' + score + '/4 \u2014 read the clues more carefully next time!';
+    resultEl.innerHTML = '<h3>' + msg + '</h3>';
+
+    document.getElementById('rm-check-btn').classList.add('hidden');
+    document.getElementById('btn-revmatch-done').classList.remove('hidden');
+    document.getElementById('btn-revmatch-done').onclick = () => proceedToNext('revmatch');
   }
 
   /* ─────────────────────────────────────────────
