@@ -290,23 +290,26 @@
     <div class="stage-header">
       <span class="stage-badge">Stage 8</span>
       <h2>Qui a écrit cet avis ?</h2>
-      <p>Four customers visited the restaurant. Read their reviews and work out who wrote what!</p>
+      <p>Read the character clues, then pick the correct review for each customer.</p>
     </div>
 
-    <!-- Character cards -->
-    <div id="rm-characters" class="rm-characters"></div>
-
-    <!-- Reviews to match -->
-    <div id="rm-reviews" class="rm-reviews"></div>
-
-    <!-- Matching area -->
-    <div id="rm-matching" class="rm-matching hidden">
-      <h3>Match each review to its author</h3>
-      <div id="rm-match-grid" class="rm-match-grid"></div>
-      <button id="rm-check-btn" class="btn-primary">Check Answers</button>
+    <!-- Progress -->
+    <div class="rm-progress">
+      <span>Customer <span id="rm-current">1</span> of <span id="rm-total">4</span></span>
+      <div class="progress-bar"><div id="rm-bar" class="progress-fill"></div></div>
     </div>
 
-    <!-- Result -->
+    <!-- Active character card -->
+    <div id="rm-character-card" class="rm-character-active"></div>
+
+    <!-- Review options (4 choices) -->
+    <div id="rm-review-options" class="rm-review-options"></div>
+
+    <!-- Feedback after answering -->
+    <div id="rm-feedback" class="rm-feedback hidden"></div>
+    <button id="rm-next-btn" class="btn-secondary hidden">Next Customer</button>
+
+    <!-- Final result -->
     <div id="rm-result" class="rm-result hidden"></div>
 
     <button id="btn-revmatch-done" class="btn-primary hidden">Continue to Scenario Builder</button>

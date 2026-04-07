@@ -1012,117 +1012,161 @@ const APP = (function () {
 
   /* ─────────────────────────────────────────────
      REVIEW MATCHING (Who Left Which Review?)
+     One character at a time, 4 review options
      ───────────────────────────────────────────── */
-  let rmSelections = {};
-  let rmRevealed = 0;
+  let rmCharIdx = 0;
+  let rmScore = 0;
+  let rmShuffledChars = [];
+  let rmShuffledReviews = [];
 
   function initRevMatch() {
     showScreen('revmatch');
-    rmSelections = {};
-    rmRevealed = 0;
+    rmCharIdx = 0;
+    rmScore = 0;
 
     const rmData = REVIEW_MATCH_DATA;
+    // Shuffle character order so it's not always the same
+    rmShuffledChars = shuffle(rmData.characters.map((ch, i) => ({ ...ch, origIdx: i })));
+    // Keep reviews in original array (we look up by authorIndex)
+    rmShuffledReviews = rmData.reviews;
 
-    // Render characters
-    const charsEl = document.getElementById('rm-characters');
-    charsEl.innerHTML = '<h3>Meet the Customers</h3><div class="rm-chars-grid">';
-    rmData.characters.forEach((ch, i) => {
-      charsEl.innerHTML +=
-        '<div class="rm-char-card" style="border-top: 4px solid ' + ch.colour + '">' +
-          '<h4 style="color:' + ch.colour + '">' + escHtml(ch.name) + '</h4>' +
-          '<p class="rm-tagline">\u00ab ' + escHtml(ch.tagline) + ' \u00bb</p>' +
-          '<p class="rm-tagline-phonetic">' + escHtml(ch.taglinePhonetic) + '</p>' +
-          '<p class="rm-tagline-en">' + escHtml(ch.taglineEn) + '</p>' +
-          '<p class="rm-desc-fr">' + escHtml(ch.descriptionFr) + '</p>' +
-          '<p class="rm-desc-en">' + escHtml(ch.description) + '</p>' +
-        '</div>';
-    });
-    charsEl.innerHTML += '</div>';
-
-    // Render reviews (shuffled order)
-    const reviewsEl = document.getElementById('rm-reviews');
-    const shuffledReviews = shuffle(rmData.reviews.map((r, i) => ({ ...r, origIdx: i })));
-    reviewsEl.innerHTML = '<h3>The Reviews</h3>';
-    shuffledReviews.forEach((rev, i) => {
-      reviewsEl.innerHTML +=
-        '<div class="rm-review-card" data-review-idx="' + rev.origIdx + '">' +
-          '<div class="rm-review-header">' +
-            '<span class="rm-review-num">Review ' + (i + 1) + '</span>' +
-          '</div>' +
-          '<p class="rm-review-french">' + escHtml(rev.french) + '</p>' +
-          '<details class="rm-translation-toggle">' +
-            '<summary>Show English translation</summary>' +
-            '<p class="rm-review-english">' + escHtml(rev.english) + '</p>' +
-          '</details>' +
-          '<div class="rm-review-select">' +
-            '<label>Who wrote this? </label>' +
-            '<select class="rm-select" data-review="' + rev.origIdx + '">' +
-              '<option value="">-- Choose --</option>' +
-              rmData.characters.map((ch, ci) => '<option value="' + ci + '">' + ch.name + '</option>').join('') +
-            '</select>' +
-          '</div>' +
-        '</div>';
-    });
-
-    // Matching
-    const matchEl = document.getElementById('rm-matching');
-    matchEl.classList.remove('hidden');
-    document.getElementById('rm-match-grid').innerHTML = '';
-
-    document.getElementById('rm-check-btn').onclick = checkRevMatch;
+    document.getElementById('rm-total').textContent = rmShuffledChars.length;
     document.getElementById('rm-result').classList.add('hidden');
     document.getElementById('btn-revmatch-done').classList.add('hidden');
+
+    showRmQuestion();
   }
 
-  function checkRevMatch() {
-    const selects = document.querySelectorAll('.rm-select');
+  function showRmQuestion() {
     const rmData = REVIEW_MATCH_DATA;
-    let score = 0;
-    let total = rmData.reviews.length;
-    let allAnswered = true;
+    const ch = rmShuffledChars[rmCharIdx];
+    const num = rmCharIdx + 1;
+    const total = rmShuffledChars.length;
 
-    selects.forEach(sel => {
-      if (!sel.value) allAnswered = false;
+    // Update progress
+    document.getElementById('rm-current').textContent = num;
+    document.getElementById('rm-bar').style.width = Math.round(((num - 1) / total) * 100) + '%';
+
+    // Render character card
+    const cardEl = document.getElementById('rm-character-card');
+    cardEl.innerHTML =
+      '<div class="rm-active-card" style="border-color:' + ch.colour + '">' +
+        '<h3 style="color:' + ch.colour + '">' + escHtml(ch.name) + '</h3>' +
+        '<p class="rm-tagline">\u00ab ' + escHtml(ch.tagline) + ' \u00bb</p>' +
+        '<p class="rm-tagline-phonetic">' + escHtml(ch.taglinePhonetic) + '</p>' +
+        '<p class="rm-tagline-en">' + escHtml(ch.taglineEn) + '</p>' +
+        '<p class="rm-desc-fr">' + escHtml(ch.descriptionFr) + '</p>' +
+        '<p class="rm-desc-en">' + escHtml(ch.description) + '</p>' +
+      '</div>' +
+      '<h4 class="rm-question-prompt">Which review did <strong>' + escHtml(ch.name) + '</strong> write?</h4>';
+
+    // Render 4 review options (shuffled)
+    const optionsEl = document.getElementById('rm-review-options');
+    const shuffledRevs = shuffle(rmData.reviews.map((r, i) => ({ ...r, origIdx: i })));
+    const labels = ['A', 'B', 'C', 'D'];
+    optionsEl.innerHTML = '';
+
+    shuffledRevs.forEach((rev, oi) => {
+      const btn = document.createElement('div');
+      btn.className = 'rm-option-card';
+      btn.dataset.authorIdx = rev.authorIndex;
+      btn.innerHTML =
+        '<span class="rm-opt-label">' + labels[oi] + '</span>' +
+        '<div class="rm-opt-body">' +
+          '<p class="rm-opt-french">' + escHtml(rev.french) + '</p>' +
+          '<details class="rm-translation-toggle">' +
+            '<summary>Show English</summary>' +
+            '<p class="rm-opt-english">' + escHtml(rev.english) + '</p>' +
+          '</details>' +
+        '</div>';
+      btn.addEventListener('click', function(e) {
+        // Don't trigger on details/summary clicks
+        if (e.target.closest('details')) return;
+        handleRmChoice(rev.authorIndex, ch.origIdx, btn);
+      });
+      optionsEl.appendChild(btn);
     });
 
-    if (!allAnswered) {
-      alert('Please match all four reviews before checking!');
-      return;
-    }
+    // Hide feedback and next button
+    document.getElementById('rm-feedback').classList.add('hidden');
+    document.getElementById('rm-next-btn').classList.add('hidden');
 
-    selects.forEach(sel => {
-      const reviewIdx = parseInt(sel.dataset.review);
-      const chosenChar = parseInt(sel.value);
-      const review = rmData.reviews[reviewIdx];
-      const isCorrect = chosenChar === review.authorIndex;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
 
-      sel.disabled = true;
-      const card = sel.closest('.rm-review-card');
-      if (isCorrect) {
-        score++;
-        card.classList.add('rm-correct');
-        sel.parentElement.innerHTML =
-          '<span class="rm-result-badge rm-badge-correct">\u2714 ' + rmData.characters[review.authorIndex].name + ' \u2014 Correct!</span>';
+  function handleRmChoice(chosenAuthor, correctCharIdx, clickedEl) {
+    const isCorrect = chosenAuthor === correctCharIdx;
+    if (isCorrect) rmScore++;
+
+    const rmData = REVIEW_MATCH_DATA;
+    const correctAuthorName = rmData.characters[correctCharIdx].name;
+
+    // Disable all option cards
+    const allOpts = document.querySelectorAll('.rm-option-card');
+    allOpts.forEach(opt => {
+      opt.style.pointerEvents = 'none';
+      const ai = parseInt(opt.dataset.authorIdx);
+      if (ai === correctCharIdx) {
+        opt.classList.add('rm-opt-correct');
+      } else if (opt === clickedEl && !isCorrect) {
+        opt.classList.add('rm-opt-wrong');
       } else {
-        card.classList.add('rm-wrong');
-        sel.parentElement.innerHTML =
-          '<span class="rm-result-badge rm-badge-wrong">\u2718 Wrong \u2014 It was <strong>' + rmData.characters[review.authorIndex].name + '</strong></span>';
+        opt.classList.add('rm-opt-dimmed');
       }
     });
 
-    // Show result
+    // Show feedback
+    const feedbackEl = document.getElementById('rm-feedback');
+    feedbackEl.classList.remove('hidden');
+    if (isCorrect) {
+      feedbackEl.className = 'rm-feedback rm-fb-correct';
+      feedbackEl.innerHTML = '<strong>\u2714 Correct!</strong> That review was written by ' + escHtml(correctAuthorName) + '.';
+    } else {
+      feedbackEl.className = 'rm-feedback rm-fb-wrong';
+      feedbackEl.innerHTML = '<strong>\u2718 Not quite.</strong> The correct review for ' + escHtml(correctAuthorName) + ' is highlighted in green.';
+    }
+
+    // Show next button or finish
+    const nextBtn = document.getElementById('rm-next-btn');
+    if (rmCharIdx < rmShuffledChars.length - 1) {
+      nextBtn.textContent = 'Next Customer';
+      nextBtn.classList.remove('hidden');
+      nextBtn.onclick = () => {
+        rmCharIdx++;
+        showRmQuestion();
+      };
+    } else {
+      nextBtn.textContent = 'See Results';
+      nextBtn.classList.remove('hidden');
+      nextBtn.onclick = finishRevMatch;
+    }
+
+    feedbackEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function finishRevMatch() {
+    const total = rmShuffledChars.length;
+    const pct = Math.round((rmScore / total) * 100);
+    let msg = rmScore === total ? '\u{1F389} Perfect! You matched all four reviews!' :
+              rmScore >= 3 ? '\u{1F44F} Almost! ' + rmScore + '/' + total + ' correct.' :
+              rmScore >= 2 ? '\u{1F914} ' + rmScore + '/' + total + ' \u2014 some were tricky!' :
+              '\u{1F4AA} ' + rmScore + '/' + total + ' \u2014 read the clues more carefully next time!';
+
+    // Hide question elements
+    document.getElementById('rm-character-card').innerHTML = '';
+    document.getElementById('rm-review-options').innerHTML = '';
+    document.getElementById('rm-feedback').classList.add('hidden');
+    document.getElementById('rm-next-btn').classList.add('hidden');
+    document.getElementById('rm-bar').style.width = '100%';
+
     const resultEl = document.getElementById('rm-result');
     resultEl.classList.remove('hidden');
-    const pct = Math.round((score / total) * 100);
-    let msg = score === total ? '\u{1F389} Perfect! You matched all four reviews!' :
-              score >= 3 ? '\u{1F44F} Almost! ' + score + '/4 correct.' :
-              score >= 2 ? '\u{1F914} ' + score + '/4 \u2014 some were tricky!' :
-              '\u{1F4AA} ' + score + '/4 \u2014 read the clues more carefully next time!';
-    resultEl.innerHTML = '<h3>' + msg + '</h3>';
+    resultEl.innerHTML = '<h3>' + msg + '</h3><p class="rm-final-score">' + rmScore + ' / ' + total + ' (' + pct + '%)</p>';
 
-    document.getElementById('rm-check-btn').classList.add('hidden');
     document.getElementById('btn-revmatch-done').classList.remove('hidden');
     document.getElementById('btn-revmatch-done').onclick = () => proceedToNext('revmatch');
+
+    resultEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }
 
   /* ─────────────────────────────────────────────
