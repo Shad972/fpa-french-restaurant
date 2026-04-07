@@ -918,8 +918,7 @@ const APP = (function () {
         btn.className = 'rpg-option-btn';
         btn.innerHTML =
           '<span class="rpg-opt-label">' + labels[oi] + '</span>' +
-          '<span class="rpg-opt-french">' + escHtml(opt.french) + '</span>' +
-          '<span class="rpg-opt-english">' + escHtml(opt.english) + '</span>';
+          '<span class="rpg-opt-french">' + escHtml(opt.french) + '</span>';
         btn.addEventListener('click', () => handleRpChoice(oi));
         optionsEl.appendChild(btn);
       });
@@ -1030,7 +1029,6 @@ const APP = (function () {
     rmData.characters.forEach((ch, i) => {
       charsEl.innerHTML +=
         '<div class="rm-char-card" style="border-top: 4px solid ' + ch.colour + '">' +
-          '<div class="rm-char-emoji">' + ch.emoji + '</div>' +
           '<h4 style="color:' + ch.colour + '">' + escHtml(ch.name) + '</h4>' +
           '<p class="rm-tagline">\u00ab ' + escHtml(ch.tagline) + ' \u00bb</p>' +
           '<p class="rm-tagline-phonetic">' + escHtml(ch.taglinePhonetic) + '</p>' +
@@ -1046,11 +1044,9 @@ const APP = (function () {
     const shuffledReviews = shuffle(rmData.reviews.map((r, i) => ({ ...r, origIdx: i })));
     reviewsEl.innerHTML = '<h3>The Reviews</h3>';
     shuffledReviews.forEach((rev, i) => {
-      const starsStr = '\u2B50'.repeat(rev.stars) + '\u2606'.repeat(5 - rev.stars);
       reviewsEl.innerHTML +=
         '<div class="rm-review-card" data-review-idx="' + rev.origIdx + '">' +
           '<div class="rm-review-header">' +
-            '<span class="rm-stars">' + starsStr + '</span>' +
             '<span class="rm-review-num">Review ' + (i + 1) + '</span>' +
           '</div>' +
           '<p class="rm-review-french">' + escHtml(rev.french) + '</p>' +
