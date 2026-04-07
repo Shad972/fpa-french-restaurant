@@ -36,6 +36,8 @@ const APP = (function () {
   /* ─────────────────────────────────────────────
      INIT
      ───────────────────────────────────────────── */
+  let teacherMode = false;
+
   function init() {
     const params = new URLSearchParams(window.location.search);
     const c = params.get('c');
@@ -52,6 +54,13 @@ const APP = (function () {
     firebase.initializeApp(firebaseConfig);
     db = firebase.database();
     classRef = db.ref('classes/' + classId);
+
+    // Teacher mode: bypass login/lobby, show nav bar
+    teacherMode = params.get('mode') === 'teacher';
+    if (teacherMode) {
+      initTeacherMode();
+      return;
+    }
 
     // Check for returning student
     const saved = localStorage.getItem('fpa_student_' + classId);
@@ -73,6 +82,69 @@ const APP = (function () {
       } catch (e) { /* fall through */ }
     }
     showWelcome();
+  }
+
+  /* ─────────────────────────────────────────────
+     TEACHER MODE (no login, free navigation)
+     ───────────────────────────────────────────── */
+  const STAGE_LABELS = {
+    vocab: 'Vocabulary', menu: 'Menu', roleplay: 'Roleplay',
+    tf: 'True / False', mc: 'Multiple Choice', dd: 'Drag & Drop',
+    rpgame: 'Roleplay Game', revmatch: 'Review Matching',
+    scenario: 'Scenario Builder', review: 'Results', hall: 'Hall of Fame'
+  };
+
+  function initTeacherMode() {
+    // Set fake student so saveScore etc. won't crash
+    studentId = 'teacher';
+    studentName = 'Teacher';
+    selectedAvatar = 0;
+
+    // Build the floating teacher nav bar
+    const nav = document.createElement('div');
+    nav.id = 'teacher-nav';
+    nav.innerHTML =
+      '<button id="tn-back" class="tn-btn" title="Go back">\u25C0 Back</button>' +
+      '<select id="tn-stage-select"></select>' +
+      '<button id="tn-reset" class="tn-btn tn-reset" title="Reset current activity">\u21BB Reset</button>' +
+      '<span class="tn-label">' + classConfig.label + ' \u2014 Teacher Mode</span>';
+    document.body.prepend(nav);
+
+    // Populate stage dropdown
+    const sel = document.getElementById('tn-stage-select');
+    STAGE_ORDER.forEach(key => {
+      const opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = STAGE_LABELS[key] || key;
+      sel.appendChild(opt);
+    });
+
+    sel.addEventListener('change', () => {
+      goToStage(sel.value);
+    });
+
+    document.getElementById('tn-back').addEventListener('click', () => {
+      const idx = STAGE_ORDER.indexOf(currentStage);
+      if (idx > 0) {
+        const prev = STAGE_ORDER[idx - 1];
+        sel.value = prev;
+        goToStage(prev);
+      }
+    });
+
+    document.getElementById('tn-reset').addEventListener('click', () => {
+      goToStage(currentStage);
+    });
+
+    // Start at vocab
+    sel.value = 'vocab';
+    goToStage('vocab');
+  }
+
+  function updateTeacherNav(stage) {
+    if (!teacherMode) return;
+    const sel = document.getElementById('tn-stage-select');
+    if (sel) sel.value = stage;
   }
 
   /* ─────────────────────────────────────────────
@@ -342,7 +414,10 @@ const APP = (function () {
   }
 
   function goToStage(stage) {
+    // Stop any running timers on stage switch
+    Object.keys(timers).forEach(id => stopTimer(id));
     currentStage = stage;
+    updateTeacherNav(stage);
     updateStudentStage(stage);
 
     switch (stage) {
@@ -365,6 +440,9 @@ const APP = (function () {
     if (idx < 0 || idx >= STAGE_ORDER.length - 1) return;
     const next = STAGE_ORDER[idx + 1];
 
+    // Teacher mode: skip unlock checks, go directly
+    if (teacherMode) { goToStage(next); return; }
+
     classRef.child('settings/stages/' + next).once('value').then(snap => {
       const val = snap.val();
       if (val && val.unlocked) {
@@ -384,7 +462,7 @@ const APP = (function () {
   }
 
   function updateStudentStage(stage) {
-    if (studentId) classRef.child('students/' + studentId + '/currentStage').set(stage);
+    if (studentId && !teacherMode) classRef.child('students/' + studentId + '/currentStage').set(stage);
   }
 
   /* ─────────────────────────────────────────────
@@ -924,8 +1002,8 @@ const APP = (function () {
       document.getElementById('rpg-cards').classList.remove('hidden');
     };
 
-    // Show continue button after at least 2 scenarios completed
-    if (rpgCompleted >= 2) {
+    // Show continue button after at least 2 scenarios completed (always in teacher mode)
+    if (rpgCompleted >= 2 || teacherMode) {
       document.getElementById('btn-rpgame-done').classList.remove('hidden');
       document.getElementById('btn-rpgame-done').onclick = () => proceedToNext('rpgame');
     }
@@ -1220,7 +1298,7 @@ const APP = (function () {
   function stopTimer(id) { if (timers[id]) { clearInterval(timers[id]); delete timers[id]; } }
 
   function saveScore(stage, score, total, time, answers) {
-    if (!studentId) return;
+    if (!studentId || teacherMode) return;
     classRef.child('students/' + studentId + '/scores/' + stage).set({
       score, total, time, answers, completedAt: firebase.database.ServerValue.TIMESTAMP
     });

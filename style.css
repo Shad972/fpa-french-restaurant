@@ -659,3 +659,35 @@ h3 { font-size: 1.25rem; font-weight: 600; }
   .rpg-cards { grid-template-columns: 1fr 1fr; gap: .5rem; }
   .rm-chars-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ============================================================
+   TEACHER NAV BAR
+   ============================================================ */
+#teacher-nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 9999;
+  display: flex; align-items: center; gap: .6rem;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+  padding: .5rem 1rem; box-shadow: 0 2px 12px rgba(0,0,0,.4);
+  font-family: 'Inter', sans-serif;
+}
+#teacher-nav .tn-btn {
+  padding: .4rem .9rem; border: 2px solid #c9a87c; background: transparent;
+  color: #c9a87c; border-radius: 6px; cursor: pointer; font-weight: 600;
+  font-size: .82rem; transition: all .2s;
+}
+#teacher-nav .tn-btn:hover { background: #c9a87c; color: #1a1a2e; }
+#teacher-nav .tn-reset { border-color: #ef5350; color: #ef5350; }
+#teacher-nav .tn-reset:hover { background: #ef5350; color: #fff; }
+#teacher-nav select {
+  flex: 1; max-width: 240px; padding: .4rem .6rem;
+  background: #0f3460; color: #fff; border: 2px solid #2a3a5c;
+  border-radius: 6px; font-size: .85rem; font-family: 'Inter', sans-serif;
+  cursor: pointer;
+}
+#teacher-nav select:focus { outline: none; border-color: #c9a87c; }
+#teacher-nav .tn-label {
+  margin-left: auto; color: #8b9dc3; font-size: .78rem; font-weight: 500;
+  white-space: nowrap;
+}
+body:has(#teacher-nav) .screen { padding-top: 55px; }
+body:has(#teacher-nav) .stage-container { margin-top: .5rem; }
