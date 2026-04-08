@@ -806,6 +806,7 @@ const APP = (function () {
   let rpgExchangeIdx = 0;
   let rpgScore = 0;
   let rpgTotal = 0;
+  let rpgHistory = []; // snapshots of dialogue HTML at each exchange step
 
   function initRpGame() {
     showScreen('rpgame');
@@ -857,6 +858,7 @@ const APP = (function () {
     rpgExchangeIdx = 0;
     rpgScore = 0;
     rpgTotal = 0;
+    rpgHistory = [];
 
     document.getElementById('rpg-cards').classList.add('hidden');
     document.getElementById('rpg-result').classList.add('hidden');
@@ -868,6 +870,8 @@ const APP = (function () {
     document.getElementById('rpg-scenario-context').textContent = rpgCurrentScenario.context;
     document.getElementById('rpg-dialogue').innerHTML = '';
     document.getElementById('rpg-progress-fill').style.width = '0%';
+    document.getElementById('rpg-prev-btn').classList.add('hidden');
+    document.getElementById('rpg-prev-btn').onclick = goToPrevExchange;
 
     advanceRpExchange();
   }
@@ -884,9 +888,17 @@ const APP = (function () {
     const choicesEl = document.getElementById('rpg-choices');
     const feedbackEl = document.getElementById('rpg-feedback');
     const nextBtn = document.getElementById('rpg-next-btn');
+    const prevBtn = document.getElementById('rpg-prev-btn');
     choicesEl.classList.add('hidden');
     feedbackEl.classList.add('hidden');
     nextBtn.classList.add('hidden');
+
+    // Show Previous button if there's history to go back to
+    if (rpgHistory.length > 0) {
+      prevBtn.classList.remove('hidden');
+    } else {
+      prevBtn.classList.add('hidden');
+    }
 
     if (ex.speaker === 'waiter') {
       // Waiter line — auto-display
@@ -903,6 +915,14 @@ const APP = (function () {
       // Small delay then advance
       setTimeout(() => advanceRpExchange(), 800);
     } else {
+      // Save snapshot BEFORE showing choices (so Previous can restore this state)
+      rpgHistory.push({
+        exchangeIdx: rpgExchangeIdx,
+        dialogueHTML: dialogue.innerHTML,
+        score: rpgScore,
+        total: rpgTotal
+      });
+
       // Customer turn — show choices
       rpgTotal++;
       choicesEl.classList.remove('hidden');
@@ -928,6 +948,21 @@ const APP = (function () {
     const total = sc.exchanges.length;
     const pct = Math.round((rpgExchangeIdx / total) * 100);
     document.getElementById('rpg-progress-fill').style.width = pct + '%';
+  }
+
+  function goToPrevExchange() {
+    if (rpgHistory.length === 0) return;
+    const snap = rpgHistory.pop();
+    rpgExchangeIdx = snap.exchangeIdx;
+    rpgScore = snap.score;
+    rpgTotal = snap.total;
+
+    // Restore dialogue to the snapshot
+    const dialogue = document.getElementById('rpg-dialogue');
+    dialogue.innerHTML = snap.dialogueHTML;
+
+    // Re-run the exchange (shows choices again)
+    advanceRpExchange();
   }
 
   function handleRpChoice(chosenIdx) {
@@ -968,14 +1003,18 @@ const APP = (function () {
       feedbackEl.innerHTML = '<strong>Not quite.</strong> The correct answer was <strong>' + ['A','B','C','D'][ex.correct] + '</strong>.';
     }
 
-    // Show next button
+    // Show nav buttons
     const nextBtn = document.getElementById('rpg-next-btn');
+    const prevBtn = document.getElementById('rpg-prev-btn');
     nextBtn.classList.remove('hidden');
+    if (rpgHistory.length > 0) prevBtn.classList.remove('hidden');
+
     nextBtn.onclick = () => {
       rpgExchangeIdx++;
       document.getElementById('rpg-choices').classList.add('hidden');
       feedbackEl.classList.add('hidden');
       nextBtn.classList.add('hidden');
+      prevBtn.classList.add('hidden');
       advanceRpExchange();
     };
 

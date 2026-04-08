@@ -516,6 +516,7 @@ h3 { font-size: 1.25rem; font-weight: 600; }
 .rpg-card-titlefr { font-style: italic; color: #757575; font-size: .8rem; margin-bottom: .5rem; }
 .rpg-card-ctx { font-size: .75rem; color: #555; line-height: 1.4; margin-bottom: .5rem; }
 .rpg-play-btn { margin-top: .5rem; font-size: .8rem; padding: .4rem 1rem; }
+.rpg-nav-btns { display: flex; gap: .75rem; margin-top: .5rem; }
 
 /* RPG Play Area */
 .rpg-play { max-width: 800px; margin: 0 auto; }
