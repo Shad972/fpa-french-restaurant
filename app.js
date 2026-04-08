@@ -825,18 +825,16 @@ const APP = (function () {
       card.style.borderColor = sc.colour;
       card.dataset.idx = i;
       card.innerHTML =
-        '<div class="rpg-card-inner">' +
-          '<div class="rpg-card-front" style="background:' + sc.colour + '">' +
-            '<span class="rpg-card-icon">' + sc.icon + '</span>' +
-            '<span class="rpg-card-num">Scenario ' + (i + 1) + '</span>' +
-          '</div>' +
-          '<div class="rpg-card-back">' +
-            '<span class="rpg-card-icon-sm">' + sc.icon + '</span>' +
-            '<h4>' + escHtml(sc.title) + '</h4>' +
-            '<p class="rpg-card-titlefr">' + escHtml(sc.titleFr) + '</p>' +
-            '<p class="rpg-card-ctx">' + escHtml(sc.context) + '</p>' +
-            '<button class="btn-secondary rpg-play-btn">Play this scenario</button>' +
-          '</div>' +
+        '<div class="rpg-card-front" style="background:' + sc.colour + '">' +
+          '<span class="rpg-card-icon">' + sc.icon + '</span>' +
+          '<span class="rpg-card-num">Scenario ' + (i + 1) + '</span>' +
+        '</div>' +
+        '<div class="rpg-card-back">' +
+          '<span class="rpg-card-icon-sm">' + sc.icon + '</span>' +
+          '<h4>' + escHtml(sc.title) + '</h4>' +
+          '<p class="rpg-card-titlefr">' + escHtml(sc.titleFr) + '</p>' +
+          '<p class="rpg-card-ctx">' + escHtml(sc.context) + '</p>' +
+          '<button class="btn-secondary rpg-play-btn">Play this scenario</button>' +
         '</div>';
       card.addEventListener('click', function(e) {
         if (card.classList.contains('flipped') && !e.target.classList.contains('rpg-play-btn')) return;

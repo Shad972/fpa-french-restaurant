@@ -484,36 +484,37 @@ h3 { font-size: 1.25rem; font-weight: 600; }
    ═══════════════════════════════════════════════ */
 .rpg-cards {
   display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
-  max-width: 900px; margin: 1.5rem auto; perspective: 1000px;
+  max-width: 900px; margin: 1.5rem auto;
 }
 .rpg-card {
-  aspect-ratio: 3/4; cursor: pointer; position: relative;
+  cursor: pointer; position: relative;
   border-radius: 12px; border: 3px solid #ccc;
   transition: transform .15s;
 }
 .rpg-card:hover { transform: translateY(-4px); }
-.rpg-card-inner {
-  width: 100%; height: 100%; position: relative;
-  transform-style: preserve-3d; transition: transform .6s;
-}
-.rpg-card.flipped .rpg-card-inner { transform: rotateY(180deg); }
-.rpg-card-front, .rpg-card-back {
-  position: absolute; width: 100%; height: 100%;
-  backface-visibility: hidden; border-radius: 10px;
+
+/* Front face (unflipped) */
+.rpg-card-front {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 1rem; text-align: center;
+  padding: 1.25rem 1rem; text-align: center; color: #fff;
+  border-radius: 10px; min-height: 160px;
 }
-.rpg-card-front { color: #fff; }
 .rpg-card-icon { font-size: 3rem; margin-bottom: .5rem; }
 .rpg-card-num { font-family: 'Playfair Display', serif; font-size: 1rem; opacity: .9; }
+
+/* Back face (flipped) — hidden by default */
 .rpg-card-back {
-  background: #fff; transform: rotateY(180deg);
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  padding: 1rem; text-align: center;
+  background: #fff; border-radius: 10px;
   box-shadow: 0 4px 15px rgba(0,0,0,.12);
 }
+.rpg-card.flipped .rpg-card-front { display: none; }
+.rpg-card.flipped .rpg-card-back { display: flex; }
 .rpg-card-icon-sm { font-size: 2rem; margin-bottom: .3rem; }
 .rpg-card-back h4 { font-size: .95rem; color: #1a237e; margin-bottom: .2rem; }
 .rpg-card-titlefr { font-style: italic; color: #757575; font-size: .8rem; margin-bottom: .5rem; }
-.rpg-card-ctx { font-size: .75rem; color: #555; line-height: 1.4; flex: 1; }
+.rpg-card-ctx { font-size: .75rem; color: #555; line-height: 1.4; margin-bottom: .5rem; }
 .rpg-play-btn { margin-top: .5rem; font-size: .8rem; padding: .4rem 1rem; }
 
 /* RPG Play Area */
